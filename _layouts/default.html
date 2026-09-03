@@ -14,8 +14,8 @@
     {% include head-custom.html %}
 
     {% if true %}
-      {% assign favicon_href = page.favicon | default: site.favicon | default: 'https://avatars.githubusercontent.com/ProtectorRTD' %}
-      <link rel='icon' href='{{ favicon_href }}' />
+      {% assign favicon_href = page.favicon | default: site.favicon | default: '/assets/img/favicon.png' %}
+      <link rel='icon' type='image/png' href='{{ favicon_href }}' />
     {% endif %}
 
     {% if false %}
@@ -497,22 +497,17 @@
     <div id="background-fill" class="vw-100 vh-100  bg-light   position-fixed" style="top: 0px; left: 0px; z-index: -2022;"></div>
 
 
-    {% if true %}
+    {% comment %} Logo in the top-right corner. Rendered only when logo_src is set in _config.yml. {% endcomment %}
+    {% assign logo_src = page.logo_src | default: site.logo_src %}
+    {% if logo_src != blank %}
       {% assign logo_background = page.logo_background | default: site.logo_background | default: "#00cce4" %}
       <div class="col-2 col-sm-2 col-md-2 col-lg-2   pl-0 pl-sm-0 pl-md-0   fixed-top   ml-auto"  style="z-index: 9999;">
-        <a target="_blank" href='{{ page.logo_href | default: site.logo_href | default: site.github.owner_url | default: "https://github.com/ProtectorRTD" }}'>
+        <a target="_blank" href='{{ page.logo_href | default: site.logo_href | default: site.github.owner_url }}'>
           <div class="pt-3 pt-md-4  px-0  pb-2 pb-md-3   ml-0 ml-md-2 ml-lg-2" style='width: fit-content; border-radius: 0px 0px 5% 5%; overflow: hidden; background: {{ logo_background }};'>
-            <img style='width: 12.5vw; max-width: 7rem;' src='{{ page.logo_src | default: site.logo_src | default: "https://avatars.githubusercontent.com/ProtectorRTD" }}' />
+            <img style='width: 12.5vw; max-width: 7rem;' src='{{ logo_src }}' />
           </div>
         </a>
       </div>
-      {% if false %}
-        <script>
-          let img = $("img")[$("img").length-1];
-          img.src = 'https://avatars.githubusercontent.com/u/45192683';
-          $(img).parent().css("background", "#00cce4");
-        </script>
-      {% endif %}
     {% endif %}
 
 
@@ -667,7 +662,6 @@
             editUrl = 'https://github.com/{{ site.github.repository_nwo }}/edit/main' + editUrl;
             document.write('Edit in <a href="'+editUrl+'">Markdown</a><br />');
           </script>
-          VS Code on <a href="https://github.dev/{{ site.github.repository_nwo }}">Repository</a>
         </small>
       </nav>
       <section class="col-12 col-sm-12 col-md-10 col-lg-7   px-5 px-md-3  pl-lg-3 pr-lg-4   -my-5 -border">

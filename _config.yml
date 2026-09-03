@@ -28,8 +28,11 @@ kramdown:
 show_downloads: false
 google_analytics:
 
-favicon:
-logo_src: "https://avatars.githubusercontent.com/ProtectorRTD"
+favicon: "/assets/img/favicon.png"
+
+# Логотип в правом верхнем углу. Пусто = логотипа нет.
+# Чтобы поставить — укажите путь, например "/assets/img/logo.png"
+logo_src: ""
 logo_href: "https://github.com/ProtectorRTD"
 logo_background: "#00cce4"
 
@@ -55,6 +58,8 @@ exclude:
   - .dist
   - .vscode
   - README.md
+  - docs        # внутренняя документация и концепты — не публикуется
+  - drafts      # черновики — не публикуются
   - Gemfile
   - Gemfile.lock
   - vendor

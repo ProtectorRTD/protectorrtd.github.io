@@ -10,6 +10,11 @@ Gemfile.lock
 vendor/
 .bundle/
 
-# OS / editor
+# Editor / OS
 .DS_Store
 Thumbs.db
+*.swp
+*~
+
+# Раскомментируйте, если черновики не должны попадать на GitHub
+# drafts/
