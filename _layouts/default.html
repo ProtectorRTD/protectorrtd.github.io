@@ -89,7 +89,8 @@
           break;
         }
         // insert first heading if not exists
-        let sectionFirstEl = document.querySelector('section')?.children[0];
+        // на главной не нужно: там список, а не текст, и заголовок уже есть в шапке
+        let sectionFirstEl = document.querySelector('#page-links') ? null : document.querySelector('section')?.children[0];
         if (0 > sectionFirstEl?.tagName.search(/[hH][1-6]/) && !sectionFirstEl?.querySelector('h1, h2, h3, h4, h5, h6')) {
           let topAnchorEl = document.createElement(topMostHeaderTag);
           topAnchorEl.innerText = document.querySelector('header h1').innerText;
@@ -128,6 +129,21 @@
         });
         // nav height = 100vh - header - footer - 4px (magic number??? top/bottom border height x 2, header & footer)
         $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px - '+ $("#footer").outerHeight(true) +'px)');
+
+        // Шапка зафиксирована, а под ней стоит распорка той же высоты.
+        // Теперь в шапке может быть несколько строк (дата, теги, фильтры),
+        // поэтому высоту распорки считаем по факту, а не подбираем разметкой.
+        function SyncHeaderSpacer() {
+          let h = document.querySelector('#header');
+          let spacer = document.querySelector('#header-spacer');
+          if (!h || !spacer) return;
+          spacer.style.height = h.getBoundingClientRect().height + 'px';
+          $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px - ' + $("#footer").outerHeight(true) + 'px)');
+        }
+        window.SyncHeaderSpacer = SyncHeaderSpacer;
+        SyncHeaderSpacer();
+        window.addEventListener('resize', SyncHeaderSpacer);
+        window.addEventListener('load', SyncHeaderSpacer);
         OverlayScrollbars(document.querySelectorAll("nav"), {
           className: "os-theme-thin-dark",
         });
@@ -226,6 +242,17 @@
     </style>
     <!-- stylesheet -->
     <style type='text/css'>
+      /* Общий масштаб шрифтов: почти всё в макете задано в rem/em,
+         поэтому один этот процент уменьшает сайт целиком. */
+      html {
+        font-size: 90%;
+      }
+
+      /* Обязательно: без этого правила li.hidden в фильтре ничего не прячет. */
+      [hidden] {
+        display: none !important;
+      }
+
       body {
         font-weight: 300;
         font-family: 'Montserrat', 'M PLUS 1p', sans-serif;
@@ -245,8 +272,17 @@
 
       header h1 {
         font-weight: 100;
-        font-size: 2.5rem;
+        font-size: 2rem;
         -font-family: 'M PLUS 1p', sans-serif;
+      }
+
+      /* правая колонка шапки: дата, теги статьи, фильтры главной */
+      .header--meta {
+        font-size: 0.85em;
+        line-height: 1.7;
+      }
+      .header--meta > span {
+        margin-top: 0.1rem;
       }
 
       .header--lang  a {
@@ -321,7 +357,8 @@
       }
       #index-filters .filter-row
       {
-        margin-bottom: 0.3rem;
+        display: block;
+        margin-bottom: 0.15rem;
       }
       #index-filters .filter-label
       {
@@ -592,47 +629,26 @@
       <!-- spacer same with toc -->
       <div class="col-0 col-sm-0 col-md-1 col-lg-2"></div>
       <div class="col-10 col-sm-10 col-md-9 col-lg-8   px-5 px-md-3 px-lg-4   -border">
-        <h1 class="my-2   text-secondary  text-truncate   text-left">
+        <h1 class="my-2   text-secondary  text-truncate   text-center">
           {{ page.title | default: site.title }}
         </h1>
-        <p class="my-1    text-secondary  text-truncate  text-right">
-          <span class="d-none  d-md-inline-block">
-            <small class="screen--d-none">View Online:</small>
-            <small class="print--d-none">Version:</small>
-            <a href="{{ site.github.url }}{{ page.url }}"><i class="fas fa-external-link-alt  mr-1  text-black-50"></i><small>Latest</small></a>
-            {% assign page_lang = page.lang | default: site.lang | split: "-" | first %}
-            {% if page_lang == "en" %}{% assign version_label = "eng" %}{% else %}{% assign version_label = "orig" %}{% endif %}
-            <span class="ml-2"><small class="lang-badge">{{ version_label }}</small></span>
-          </span>
-          {% if page.author %}
-            <span class="d-inline-block  ml-3">
-              <small>written by</small>
-              {% for author in page.author %}
-                {% assign author_github = author | replace_first: '@', 'https://github.com/' %}
-                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
-                  {% if author != author_github %}
-                    <span itemprop="name"><a href="{{ author_github }}">{{ author }}</a></span>
-                  {% else %}
-                    <span itemprop="name">{{ author }}</span>
-                  {% endif %}
-                </span>
-                {% if forloop.last == false %}, {% endif %}
-              {% endfor %}
+        <p class="my-1    text-secondary  text-right   header--meta">
+          {% if page.date %}
+            <span class="d-block">
+              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
             </span>
           {% endif %}
           {% if page.tags and page.tags.size > 0 %}
-            <span class="d-inline-block  ml-3">
+            <span class="d-block">
               {% assign tag_lang = page.lang | default: site.lang | split: "-" | first %}
               {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
               {% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}
             </span>
           {% endif %}
-          {% if page.date %}
-            <span class="d-inline-block  ml-2">
-              <small>on</small>
-              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-                {{ page.date | date: "%b %-d, %Y" }}
-              </time>
+          {% if page.url == '/' %}
+            <span id="index-filters" class="d-block">
+              <span class="filter-row"><span class="filter-label">версия:</span><span id="lang-filter"></span></span>
+              <span class="filter-row"><span class="filter-label">теги:</span><span id="tag-filter"></span></span>
             </span>
           {% endif %}
         </p>
@@ -677,10 +693,6 @@
       <section class="col-12 col-sm-12 col-md-10 col-lg-7   px-5 px-md-3  pl-lg-3 pr-lg-4   -my-5 -border">
         {% if page.url == '/' %}
           <div id="page-links"><!-- this div tag must be the first child of section tag -->
-            <div id="index-filters">
-              <div class="filter-row"><span class="filter-label">версия:</span><span id="lang-filter"></span></div>
-              <div class="filter-row"><span class="filter-label">теги:</span><span id="tag-filter"></span></div>
-            </div>
             <h1 id="page-links--older-smartphone">{{ site.title }}</h1>
           </div>
           <script> // auto-generate page index
@@ -704,19 +716,9 @@
               if(!dirEl) {
                 let dirParentEl = document.createElement('div');
                 rootEl.appendChild(dirParentEl);
-                let dirLabel = document.createElement('h3');
-                // Human readable section names. Key = folder path, lowercase, no slashes around.
-                const DIR_LABELS = {
-                  'articles/ru': '\u0421\u0442\u0430\u0442\u044c\u0438 \u043d\u0430 \u0440\u0443\u0441\u0441\u043a\u043e\u043c',
-                  'articles/en': 'Articles in English',
-                };
-                dirLabel.innerText = DIR_LABELS[dir.toLowerCase()]
-                                  ?? dir.replace(/[-_\/]/g, ' ')
-                                        .replace(/([A-Z0-9]+)([A-Z0-9][a-z])/g, '$1 $2')  // UIClass -> UI Class
-                                        .replace(/\s*([A-Z0-9]+)/g, ' $1')  // PascalCase -> Pascal Case
-                                        .trim();
-
-                dirParentEl.appendChild(dirLabel);
+                // Заголовки разделов не рисуем: язык виден по метке orig/eng
+                // у каждой статьи и по фильтру «версия» в шапке.
+                // Группировка по папкам сохранена — она нужна фильтру.
                 dirEl = document.createElement('ul');
                 dirEl.id = dirId;
                 dirParentEl.appendChild(dirEl);
@@ -856,6 +858,7 @@
 
               render();
               apply();
+              if (window.SyncHeaderSpacer) window.SyncHeaderSpacer();
             })();
           </script>
           <hr class="my-5" />
