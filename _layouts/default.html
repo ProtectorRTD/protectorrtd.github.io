@@ -13,10 +13,10 @@
 
     {% include head-custom.html %}
 
-    {% if true %}
-      {% assign favicon_href = page.favicon | default: site.favicon | default: '/assets/img/favicon.png' %}
-      <link rel='icon' type='image/png' href='{{ favicon_href }}' />
-    {% endif %}
+    {% assign favicon_href = page.favicon | default: site.favicon | default: '/assets/img/favicon.png' %}
+    <link rel="icon" type="image/png" href="{{ favicon_href }}" />
+    <link rel="shortcut icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="{{ favicon_href }}" />
 
     {% if false %}
       <!-- jekyll commands are rendered as plain text in local environment so that remove those text from body and content element to achieve consistent layout in any environment. -->
@@ -315,30 +315,42 @@
         border-color: #adb5bd;
         text-decoration: none;
       }
-      #tag-filter
+      #index-filters
       {
-        margin: 0 0 1.5rem 0;
+        margin: 0 0 1.75rem 0;
       }
-      #tag-filter .tag-badge
+      #index-filters .filter-row
+      {
+        margin-bottom: 0.3rem;
+      }
+      #index-filters .filter-label
+      {
+        display: inline-block;
+        min-width: 4.4em;
+        font-size: 0.75em;
+        color: #adb5bd;
+        vertical-align: middle;
+      }
+      #index-filters .tag-badge
       {
         cursor: pointer;
         user-select: none;
       }
-      #tag-filter .tag-badge:hover
+      #index-filters .tag-badge:hover
       {
         border-color: #adb5bd;
       }
-      #tag-filter .tag-badge.active
+      #index-filters .tag-badge.active
       {
         background: #0366d6;
         color: #fff;
         border-color: #0366d6;
       }
-      #tag-filter .tag-filter-label
+      #lang-filter .tag-badge
       {
-        font-size: 0.75em;
-        color: #adb5bd;
-        margin-right: 0.4em;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.68em;
       }
 
       section > *:first-child,
@@ -588,76 +600,9 @@
             <small class="screen--d-none">View Online:</small>
             <small class="print--d-none">Version:</small>
             <a href="{{ site.github.url }}{{ page.url }}"><i class="fas fa-external-link-alt  mr-1  text-black-50"></i><small>Latest</small></a>
-            <script>
-              // check url existance
-              // https://stackoverflow.com/questions/333634/http-head-request-in-javascript-ajax
-              function UrlExists(lang, url_noext, callback)
-              {
-                let http = new XMLHttpRequest();
-                http.open('HEAD', (lang ? url_noext+'.'+lang : url_noext) + '.html');
-                http.onreadystatechange = function() {
-                  if (this.readyState == this.DONE) {
-                    callback(lang, url_noext, this.status != 404);
-                  }
-                };
-                http.send();
-              }
-              // callback for UrlExists
-              function UpdateHeaderFlagLink(lang, url_noext, isExists)
-              {
-                //console.log((lang ? url_noext+'.'+lang : url_noext) + '.html');
-                if (!isExists) {
-                  // english special, try again with no language extension
-                  if ('en' == lang) UrlExists(null, url_noext, UpdateHeaderFlagLink);
-                  // README.md special
-                  if (!lang) {
-                    if (url_noext.search(/README$/) > -1) {  // || url_noext.search(/\/$/) > -1) {
-                      //url_noext = url_noext.replace(/\/$/, '/README');
-                      url_noext = url_noext.replace(/README$/, 'index');
-                      UrlExists(null, url_noext, UpdateHeaderFlagLink);
-                    }
-                  }
-                  return;
-                }
-                let url = (lang ? url_noext+'.'+lang : url_noext) + '.html';
-                lang = lang ?? 'en';  // fix lang after url building.
-                let rootEl = $('#header--lang-' + lang);
-                $(rootEl).removeClass('print--d-none');  // show link in PDF if exists.
-                $(rootEl).children('a')[0].href = url;  // настоящая страница вместо Google Translate
-              }
-              //
-              // write links
-              //
-              let testMode = location.protocol == 'file:';
-              let surl = new URL(testMode ? 'https://protectorrtd.github.io/index.html' : '{{ site.github.url }}{{ page.url }}');
-              let slang = testMode ? '' : '{{ page.lang | default: "" }}';
-              
-              //
-              //  TODO: multi-language in one document
-              //    Add class="lang--ja" to support multilingual visibility function.
-              //    To create multilingual document, set lang in FrontMatter to comma separated value: 'ja, en-US, zh-CN'
-              //
-              slang = slang.split(',');
-              for (let i = 0; i < slang.length; i++) {
-                slang[i] = slang[i].trim();
-              }
-              slang = slang[0];
-              // multi-language feature not yet implemented
-
-              slang = slang.split('-')[0]; // no country code.
-              slang = slang ? slang : GetLanguageFromURL(surl.pathname);
-              for(let lang_country of ["ru-RU", "en-US"])
-              {
-                let [tlang, tcountry] = lang_country.split('-');
-                let turl = surl.protocol + '//' + surl.hostname.split('.').join('-') + '.translate.goog' + surl.pathname + '?_x_tr_sl=' + slang + '&_x_tr_tl=' + tlang;
-                document.write('   <span id="header--lang-'+tlang+'" class="print--d-none  header--lang"><a href="'+turl+'"><small class="lang-badge">'+(LANG_LABELS[tlang] ?? tlang)+'</small></a></span>');
-                // replace from google translate to github page if exists.
-                let turl_github_noext = surl.href.replace(/\.[^\/]+$/, '');
-                turl_github_noext = turl_github_noext.replace(/\/$/, '/README');  // if ends with / => /README
-                // let turl_github = turl_github_nolang + '.' + tlang + '.html'; // not .md
-                UrlExists(tlang, turl_github_noext, UpdateHeaderFlagLink);
-              }
-            </script>
+            {% assign page_lang = page.lang | default: site.lang | split: "-" | first %}
+            {% if page_lang == "en" %}{% assign version_label = "eng" %}{% else %}{% assign version_label = "orig" %}{% endif %}
+            <span class="ml-2"><small class="lang-badge">{{ version_label }}</small></span>
           </span>
           {% if page.author %}
             <span class="d-inline-block  ml-3">
@@ -677,7 +622,9 @@
           {% endif %}
           {% if page.tags and page.tags.size > 0 %}
             <span class="d-inline-block  ml-3">
-              {% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}
+              {% assign tag_lang = page.lang | default: site.lang | split: "-" | first %}
+              {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
+              {% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}
             </span>
           {% endif %}
           {% if page.date %}
@@ -730,11 +677,14 @@
       <section class="col-12 col-sm-12 col-md-10 col-lg-7   px-5 px-md-3  pl-lg-3 pr-lg-4   -my-5 -border">
         {% if page.url == '/' %}
           <div id="page-links"><!-- this div tag must be the first child of section tag -->
-            <div id="tag-filter"></div>
+            <div id="index-filters">
+              <div class="filter-row"><span class="filter-label">версия:</span><span id="lang-filter"></span></div>
+              <div class="filter-row"><span class="filter-label">теги:</span><span id="tag-filter"></span></div>
+            </div>
             <h1 id="page-links--older-smartphone">{{ site.title }}</h1>
           </div>
           <script> // auto-generate page index
-            const ALL_TAGS = new Set();
+            const TAGS_BY_LANG = {};   // 'orig' -> Set(теги), 'eng' -> Set(теги)
             function AddLink(dir, url, date, title, lang, snippet, tags) {
               dir = dir.replace(/^\//, '').replace(/\/$/, '');
 
@@ -779,7 +729,9 @@
               linkEl.classList.add('text-muted');
               let langLabel = LANG_LABELS[lang] ?? lang;
               let tagList = (tags || '').split('|').map(t => t.trim()).filter(Boolean);
-              tagList.forEach(t => ALL_TAGS.add(t));
+              (TAGS_BY_LANG[langLabel] ??= new Map());
+              tagList.forEach(t => TAGS_BY_LANG[langLabel].set(t.toLowerCase(), t));
+              linkEl.dataset.lang = langLabel;
               linkEl.dataset.tags = tagList.join('|').toLowerCase();
               let tagHtml = tagList.map(t => '<span class="tag-badge">' + t + '</span>').join('');
               linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>&nbsp;   <small class="lang-badge">'+langLabel+'</small>   <small class="text-black-50">'+date+'</small>'
@@ -817,17 +769,75 @@
             {% endfor %}
           </ul>
           <script>
-            // Фильтр по тегам. Работает без плагинов, целиком на стороне браузера.
+            // Два независимых фильтра: сначала версия (orig / eng), затем теги этой версии.
+            // Теги языков не смешиваются. Всё на стороне браузера, без плагинов.
             (function () {
-              let filterEl = document.querySelector('#tag-filter');
-              if (!filterEl || ALL_TAGS.size === 0) return;
+              let rootEl = document.querySelector('#index-filters');
+              let langEl = document.querySelector('#lang-filter');
+              let tagEl  = document.querySelector('#tag-filter');
+              if (!rootEl || !langEl || !tagEl) return;
 
-              let active = null;
+              const LANG_ORDER = ['orig', 'eng'];
+              let langs = LANG_ORDER.filter(l => TAGS_BY_LANG[l]);
+              let activeLang = null;
+              let activeTag = null;   // всегда в нижнем регистре
+
+              // теги только выбранной версии; если версия не выбрана — объединение
+              function tagMap() {
+                if (activeLang) return TAGS_BY_LANG[activeLang] ?? new Map();
+                let all = new Map();
+                langs.forEach(l => TAGS_BY_LANG[l].forEach((label, key) => all.set(key, label)));
+                return all;
+              }
+
+              function chip(text, isActive, onClick) {
+                let el = document.createElement('span');
+                el.className = 'tag-badge' + (isActive ? ' active' : '');
+                el.innerText = text;
+                el.addEventListener('click', onClick);
+                return el;
+              }
+
+              function syncUrl() {
+                let q = new URLSearchParams();
+                if (activeLang) q.set('lang', activeLang);
+                if (activeTag)  q.set('tag', activeTag);
+                let qs = q.toString();
+                history.replaceState(null, '', qs ? location.pathname + '?' + qs : location.pathname);
+              }
+
+              function render() {
+                langEl.innerHTML = '';
+                langEl.appendChild(chip('все', activeLang === null, () => {
+                  activeLang = null; activeTag = null; render(); apply(); syncUrl();
+                }));
+                langs.forEach(l => langEl.appendChild(chip(l, activeLang === l, () => {
+                  activeLang = (activeLang === l) ? null : l;
+                  if (activeTag && !tagMap().has(activeTag)) activeTag = null;
+                  render(); apply(); syncUrl();
+                })));
+
+                tagEl.innerHTML = '';
+                let map = tagMap();
+                tagEl.appendChild(chip('все', activeTag === null, () => {
+                  activeTag = null; render(); apply(); syncUrl();
+                }));
+                [...map.entries()].sort((a, b) => a[1].localeCompare(b[1])).forEach(([key, label]) => {
+                  tagEl.appendChild(chip(label, activeTag === key, () => {
+                    activeTag = (activeTag === key) ? null : key;
+                    render(); apply(); syncUrl();
+                  }));
+                });
+                // строку тегов не показываем, если тегов нет вовсе
+                tagEl.parentElement.hidden = (map.size === 0);
+              }
 
               function apply() {
                 document.querySelectorAll('#page-links li[data-tags]').forEach(li => {
+                  let okLang = !activeLang || li.dataset.lang === activeLang;
                   let tags = (li.dataset.tags || '').split('|').filter(Boolean);
-                  li.hidden = active !== null && !tags.includes(active);
+                  let okTag = !activeTag || tags.includes(activeTag);
+                  li.hidden = !(okLang && okTag);
                 });
                 // прячем разделы, в которых после фильтрации ничего не осталось
                 document.querySelectorAll('#page-links ul').forEach(ul => {
@@ -835,32 +845,16 @@
                   let visible = [...ul.children].some(li => !li.hidden);
                   if (ul.parentElement) ul.parentElement.hidden = !visible;
                 });
-                filterEl.querySelectorAll('.tag-badge').forEach(chip => {
-                  chip.classList.toggle('active', chip.dataset.tag === active);
-                });
               }
 
-              let label = document.createElement('span');
-              label.className = 'tag-filter-label';
-              label.innerText = 'теги:';
-              filterEl.appendChild(label);
+              // ?lang=orig&tag=... — можно делиться ссылкой на отфильтрованный список
+              let q = new URLSearchParams(location.search);
+              let wantLang = (q.get('lang') || '').toLowerCase();
+              if (langs.includes(wantLang)) activeLang = wantLang;
+              let wantTag = (q.get('tag') || '').toLowerCase();
+              if (wantTag && tagMap().has(wantTag)) activeTag = wantTag;
 
-              [...ALL_TAGS].sort((a, b) => a.localeCompare(b)).forEach(tag => {
-                let chip = document.createElement('span');
-                chip.className = 'tag-badge';
-                chip.dataset.tag = tag.toLowerCase();
-                chip.innerText = tag;
-                chip.addEventListener('click', () => {
-                  active = (active === chip.dataset.tag) ? null : chip.dataset.tag;
-                  history.replaceState(null, '', active ? '?tag=' + encodeURIComponent(active) : location.pathname);
-                  apply();
-                });
-                filterEl.appendChild(chip);
-              });
-
-              // ?tag=... в адресе — открыть главную сразу с фильтром
-              let wanted = new URLSearchParams(location.search).get('tag');
-              if (wanted) active = wanted.toLowerCase();
+              render();
               apply();
             })();
           </script>
