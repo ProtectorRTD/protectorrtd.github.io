@@ -1,4 +1,4 @@
 ---
-layout: home
-list_title: Статьи
+title: "My Open Manual"
+lang: ru-RU
 ---

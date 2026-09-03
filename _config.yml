@@ -1,25 +1,39 @@
+# --- Site ---------------------------------------------------------------
+title: "My Open Manual"
+description: "Статьи и заметки ProtectoRTD / Articles and notes by ProtectoRTD"
+url: "https://protectorrtd.github.io"
+baseurl: ""
+lang: "ru"
+timezone: "Europe/Budapest"
+
+# --- Theme --------------------------------------------------------------
 theme: jekyll-theme-minimal
 
-markdown: GFM
+# Плагины из белого списка GitHub Pages.
+# jekyll-seo-tag нужен для тега {% seo %} в _layouts/default.html.
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
+# --- Markdown -----------------------------------------------------------
+markdown: kramdown
 kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
   syntax_highlighter_opts:
     guess_lang: true
 
-timezone: 'Asia/Tokyo'
-
-title: "My Open Manual"
-description: ""
-
+# --- Theme options ------------------------------------------------------
 show_downloads: false
-
 google_analytics:
 
 favicon:
-logo_src:
-logo_href:
-logo_background:
+logo_src: "https://avatars.githubusercontent.com/ProtectorRTD"
+logo_href: "https://github.com/ProtectorRTD"
+logo_background: "#00cce4"
 
+# --- Front matter defaults ---------------------------------------------
 defaults:
   - scope:
       path: ""
@@ -27,3 +41,20 @@ defaults:
       layout: "default"
       author:
         - "ProtectoRTD"
+  - scope:
+      path: "articles/ru"
+    values:
+      lang: "ru-RU"
+  - scope:
+      path: "articles/en"
+    values:
+      lang: "en-US"
+
+# --- Build --------------------------------------------------------------
+exclude:
+  - .dist
+  - .vscode
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor

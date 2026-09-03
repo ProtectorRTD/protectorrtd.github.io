@@ -1,0 +1,16 @@
+<!-- Локальная версия head-custom.html: перекрывает файл темы,
+     чтобы сборка не падала, если тема его не предоставит. -->
+
+{% if site.google_analytics %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ site.google_analytics }}');
+  </script>
+{% endif %}
+
+{% if page.description %}
+  <meta name="description" content="{{ page.description | strip_html | strip_newlines | truncate: 160 }}" />
+{% endif %}
