@@ -1,30 +1,29 @@
 theme: jekyll-theme-minimal
-plugins:
-  - jekyll-last-modified-at   # plugins can be loaded if it's in whitelist, this is not in.
-  #- jekyll-commonmark-ghpages
-  #- jekyll-gfm-admonitions
-markdown: GFM  #CommonMarkGhPages
-commonmark:
-  options: ["UNSAFE", "SMART", "FOOTNOTES"]
-  extensions: ["strikethrough", "autolink", "table", "-xxx-tagfilter"]
+
+markdown: GFM
+
 kramdown:
   syntax_highlighter_opts:
     guess_lang: true
 
-title: 
-description: 
+timezone: 'Asia/Tokyo'
+
+title: "My Open Manual"
+description: ""
+
 show_downloads: false
-google_analytics:   # hard-coded in default.html
+
+google_analytics:
+
 favicon:
 logo_src:
-logo_href: 
-logo_background: 
-
+logo_href:
+logo_background:
 
 defaults:
   - scope:
-      path: ""   # an empty string here means all files in the project
+      path: ""
     values:
       layout: "default"
       author:
-        - "Protector RTD"
+        - "ProtectoRTD"

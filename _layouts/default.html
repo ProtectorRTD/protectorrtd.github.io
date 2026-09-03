@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'en-US' }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% seo %}
+
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" integrity="sha256-3Jy/GbSLrg0o9y5Z5n1uw0qxZECH7C6OQpVBgNFYa0g=" crossorigin="anonymous"></script>
+    <![endif]-->
+
+    {% include head-custom.html %}
+
+    {% if true %}
+      {% assign favicon_href = page.favicon | default: site.favicon | default: 'https://www.sator-imaging.com/favicon.ico' %}
+      <link rel='icon' type='image/x-icon' href='{{ favicon_href }}' />
+    {% endif %}
+
+    {% if false %}
+      <!-- jekyll commands are rendered as plain text in local environment so that remove those text from body and content element to achieve consistent layout in any environment. -->
+      <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+          document.querySelectorAll('body,header,section').forEach((e) => {
+            for(let node of e.childNodes.values()) {
+              if(node.nodeType == Node.TEXT_NODE && -1 < node.textContent.search(/[^\s]+/)) {
+                //alert(node.textContent);
+                node.textContent = '';
+              }
+            }
+          })
+        });
+      </script>
+    {% endif %}
+
+    <!-- TODO: jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.0.min.js" integrity="sha256-RTQy8VOmNlT6b2PIRur37p6JEBZUE7o8wPgMvu18MC4=" crossorigin="anonymous"></script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-3341541-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-3341541-1');
+    </script>
+
+    <!-- TODO: Bootstrap CDN update if required -->
+    <link crossorigin='anonymous' rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' />
+
+    <!-- TODO: syntax hilighter stylesheet, pygments compatible -->
+    <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pygments-css@1.0.0/github.css" integrity="sha256-63+ycHutvQKL4YAIsEEXm1MLug7+FbK/ZB1ufUWFfoc=" />
+
+    <!-- TODO: Font Awesome CDN update if required -->
+    <script crossorigin='anonymous' src='https://kit.fontawesome.com/a54fde8722.js'></script>
+
+    <!-- TODO: flag icons css -->
+    <link crossorigin="anonymous" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/css/flag-icons.min.css" integrity="sha512-UwbBNAFoECXUPeDhlKR3zzWU3j8ddKIQQsDOsKhXQGdiB5i3IHEXr9kXx82+gaHigbNKbTDp3VY/G6gZqva6ZQ==" />
+
+    <!-- TODO: Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;600;900&display=swap" rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@100;300;600;900&display=swap' rel='stylesheet' />
+
+    <!-- TODO: Overlay Scrollbars -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.2/css/OverlayScrollbars.min.css" integrity="sha512-jN4O0AUkRmE6Jwc8la2I5iBmS+tCDcfUd1eq8nrZIBnDKTmCp5YxxNN1/aetnAH32qT+dDbk1aGhhoaw5cJNlw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.13.2/js/OverlayScrollbars.min.js" integrity="sha512-5UqQ4jRiUk3pxl9wZxAtep5wCxqcoo6Yu4FI5ufygoOMV2I2/lOtH1YjKdt3FcQ9uhcKFJapG0HAQ0oTC5LnOw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- script -->
+    <script>
+      // Get Language from URL
+      function GetLanguageFromURL(url)
+      {
+        let lang = url.match(/[^\/]+$/);
+        if (lang) {
+          lang = lang[0].replace(/\.[^\.]+$/, '');
+          lang = lang.match(/[^\.]+$/);
+        }
+        lang = lang ? lang[0] : 'en';
+        if (lang.length != 2) lang = 'en';
+        return lang;
+      }
+      var pageLang = "{{ page.lang | default: '' }}";
+      pageLang = pageLang.split('-')[0];
+      pageLang = pageLang ? pageLang : GetLanguageFromURL(location.pathname);
+
+      // https://github.com/pages-themes/leap-day/blob/master/assets/js/main.js
+      // modified to support non-english characters.
+      $(function() {
+        // find top-most header tag.
+        let topMostHeaderTag = 'h1';
+        for (let i = 1; i <= 6; i++) {
+          if ($("section h"+i).length == 0) continue;
+          topMostHeaderTag = 'h' + i;
+          break;
+        }
+        // insert first heading if not exists
+        let sectionFirstEl = document.querySelector('section')?.children[0];
+        if (0 > sectionFirstEl?.tagName.search(/[hH][1-6]/) && !sectionFirstEl?.querySelector('h1, h2, h3, h4, h5, h6')) {
+          let topAnchorEl = document.createElement(topMostHeaderTag);
+          topAnchorEl.innerText = document.querySelector('header h1').innerText;
+          document.querySelector('section').insertBefore(topAnchorEl, document.querySelector('section').children[0]);
+          // hide first heading if img next to.
+          if (0 <= sectionFirstEl?.tagName.search(/img/i) || sectionFirstEl?.querySelector('img')) {
+            topAnchorEl.classList.add('d-none');
+          }
+        }
+        // GitHub Flavored Markdown Spec - https://github.github.com/gfm/#ascii-punctuation-character
+        const gfmPunctuationAscii = /[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]/g;  // don't remove -'s
+        const gfmPunctuationUnicode = /[\p{Connector_Punctuation}\p{Dash_Punctuation}\p{Close_Punctuation}\p{Final_Punctuation}\p{Initial_Punctuation}\p{Other_Punctuation}\p{Open_Punctuation}]/gu;
+        // auto anchor & nav links creation
+        $("section h1, section h2, section h3, section h4, section h5, section h6").each(function() {
+          // replace - to space first due to gfmPunctuationUnicode removes -'s.
+          let anchorName = this.innerText.toLowerCase().replace(/\-/g, ' ').replace(gfmPunctuationAscii, '').replace(gfmPunctuationUnicode, '').replace(/\p{Space_Separator}/gu, '-');
+          $("nav ul").append("<li class='tag-" + this.nodeName.toLowerCase() + "'><a href='#" + anchorName + "'>" + $(this).text().replace(/）$/, '') + "</a></li>");
+          $(this).attr("id",anchorName);
+          $("nav ul li:first-child a").parent().addClass("active");
+          $("nav ul li:last-child").addClass(this.tagName.toLowerCase() == topMostHeaderTag ? "font-large" : "font-small");
+          // english special
+          if (pageLang == 'en' && this.tagName.toLowerCase() != topMostHeaderTag) {
+            $(this).css('font-weight', '600');
+          }
+        });
+        // animated scroll to anchor with header offset
+        $("nav ul li, section").on("click", "a", function(event) {
+          // encoded string causes error. always decode.
+          let targetEl = $(decodeURIComponent($(this).attr("href")));
+          if (!targetEl) return;
+          var position = $(targetEl).offset().top - document.querySelector("#header").getBoundingClientRect().height;
+          $("html").animate({scrollTop: position + 'px'}, 400);
+          $("nav ul li a").parent().removeClass("active");
+          $(this).parent().addClass("active");
+          event.preventDefault();
+        });
+        // nav height = 100vh - header - footer - 4px (magic number??? top/bottom border height x 2, header & footer)
+        $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px - '+ $("#footer").outerHeight(true) +'px)');
+        OverlayScrollbars(document.querySelectorAll("nav"), {
+          className: "os-theme-thin-dark",
+        });
+      });
+    </script>
+
+    <!-- stylesheet for OverlayScrollbars.js -->
+    <style type='text/css'>
+      /*
+      os-theme-thin-dark
+      */
+      .os-theme-thin-dark > .os-scrollbar-horizontal {
+          right: 14px;
+          height: 14px;
+          padding: 0px 6px;
+      }
+      .os-theme-thin-dark > .os-scrollbar-vertical {
+          bottom: 14px;
+          width: 14px;
+          padding: 6px 0px;
+      }
+      .os-theme-thin-dark.os-host-rtl > .os-scrollbar-horizontal {
+          left: 14px;
+          right: 0;
+      }
+      .os-theme-thin-dark > .os-scrollbar-corner {
+          height: 14px;
+          width: 14px;
+          background-color: transparent;
+      }
+      .os-theme-thin-dark > .os-scrollbar > .os-scrollbar-track {
+          background: transparent;
+      }
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track:before,
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track:before {
+          content: '';
+          display: block;
+          position: absolute;
+          background: #49505708;  /* same with H1~H6 text's color */
+      }
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track:before,
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle:before {
+          left: 0;
+          right: 0;
+          height: 2px;
+          top: 50%;
+          margin-top: -1px;
+      }
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track:before,
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle:before {
+          top: 0;
+          bottom: 0;
+          width: 2px;
+          left: 50%;
+          margin-left: -1px;
+      }
+      .os-theme-thin-dark > .os-scrollbar > .os-scrollbar-track > .os-scrollbar-handle:before {
+          content: '';
+          display: block;
+          position: absolute;
+          background: #49505718;  /* same with H1~H6 text's color */
+          border-radius: 10px;
+      }
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle:hover:before,
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle.active:before {
+          height: 4px;
+          margin-top: -2px;
+      }
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle:hover:before,
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle.active:before {
+          width: 4px;
+          margin-left: -2px;
+      }
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle:hover:before,
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle:hover:before {
+          background: #49505780;  /* same with H1~H6 text's color */
+      }
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle.active:before,
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle.active:before {
+          background: #495057;  /* same with H1~H6 text's color */
+      }
+      .os-theme-thin-dark > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle {
+          height: 100%;
+          min-width: 30px;
+      }
+      .os-theme-thin-dark > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle {
+          width: 100%;
+          min-height: 30px;
+      }
+      .os-theme-thin-dark.os-host-transition > .os-scrollbar-horizontal > .os-scrollbar-track > .os-scrollbar-handle:before {
+          transition: height 0.3s, margin-top 0.3s, background 0.2s;
+      }
+      .os-theme-thin-dark.os-host-transition > .os-scrollbar-vertical > .os-scrollbar-track > .os-scrollbar-handle:before {
+          transition: width 0.3s, margin-left 0.3s, background 0.2s;
+      }
+    </style>
+    <!-- stylesheet -->
+    <style type='text/css'>
+      body {
+        font-weight: 300;
+        font-family: 'Montserrat', 'M PLUS 1p', sans-serif;
+      }
+      section {
+        position: relative;
+      }
+
+      header,
+      section,
+      footer
+      {
+        max-width: 100vw;
+        overflow: hidden;
+      }
+
+
+      header h1 {
+        font-weight: 100;
+        font-size: 2.5rem;
+        -font-family: 'M PLUS 1p', sans-serif;
+      }
+
+      .header--lang  a {
+        -text-decoration: none;
+      }
+
+      nav ul li {
+        list-style: none;
+        line-height: 1.25em;
+        margin-bottom: 0.4em;
+        max-width: 100%;
+        ---overflow: hidden;
+        ---white-space: nowrap;
+        ---text-overflow: ellipsis;
+      }
+      nav ul li.font-large,
+      #printing-button a
+      {
+        font-size: 1.1em;
+      }
+      nav ul li.font-small {
+        font-size: 0.825em;
+      }
+
+
+
+      .flag-icon
+      {
+        vertical-align: 0.075em;
+        width: 1.375em;
+      }
+      .flag-icon-jp
+      {
+        border: 1px solid #e8e8e8;
+      }
+
+      section > *:first-child,
+      section > *:first-child *
+      {
+        margin-top: 0.0rem;
+      }
+
+      section img { max-width: 100%; }
+      section h1,
+      section h2,
+      section h3,
+      section h4,
+      section h5,
+      section h6
+      {
+        width: fit-content;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-weight: bold;  /* 600 */
+        color: #495057; /*#343a40;*/
+        background: linear-gradient(transparent 70%, #cde7 70%);
+        margin-top: 2.0rem;
+        margin-bottom: 1.3rem;
+      }
+      section h1 { font-size: 1.8rem; }
+      section h2 { font-size: 1.6rem; }
+      section h3 { font-size: 1.4rem; }
+      section h4 { font-size: 1.3rem; }
+      section h5 { font-size: 1.2rem; }
+      section h6 { font-size: 1.1rem; }
+
+      #page-links ul,
+      #page-links ol
+      {
+        margin-bottom: 2rem;
+      }
+      section ul,
+      section ol
+      {
+        margin-top: 0.5em;
+      }
+      #page-links > div > ul {
+        margin-top: -0.25em;
+      }
+
+      #page-links li,
+      section li,
+      section li > p
+      {
+        margin-bottom: 0.5em;
+      }
+
+      section code {
+        display: inline-block;
+        padding: 0em 0.4em;
+      }
+      section code,
+      section > pre,
+      section .highlighter-rouge
+      {
+        border-radius: 0.25em;
+        background-color: #ddd7;
+      }
+      section > pre,
+      section div.highlighter-rouge
+      {
+        padding: 0.75em 1.25em;
+      }
+      section div.highlighter-rouge {
+        padding-bottom: 1px;  /* non-zero value required for bottom */
+      }
+      section div.highlighter-rouge > div > pre {
+        padding-bottom: 0.5em;
+      }
+      section  pre > code {  /* :not() doesn't work as expected */
+        border-radius: 0px;
+        background-color: transparent;
+      }
+      /* for Print to PDF */
+      section pre { border: none; }
+
+      section b,
+      section strong
+      {
+        color: #495057;  /* same with H1~H6 text's color */
+        font-weight: bold;
+      }
+      section img {
+        border-radius: 0.25em;
+      }
+
+      blockquote {
+        position: relative;
+        border-radius: 0.25rem;
+        padding: 1em 1.5em 0.1em 4em;
+        margin-bottom: 1.5em;
+        box-sizing: border-box;
+        font-style: italic;
+        background: #f0f4f8;
+      }
+      blockquote::before {
+        display: inline-block;
+        position: absolute;
+        top: 0.15em;
+        left: 0.45em;
+        content: "\f10d";
+        font-family: "FontAwesome";
+        color: #d0d8e0;
+        font-size: 2em;
+        font-weight: bold;  /* 900 */
+      }
+      blockquote cite {
+        display: block;
+        text-align: right;
+        color: #b0b4b8;
+        font-size: 0.9em;
+        margin-bottom: 0.5em;
+      }
+
+      /* https://fontawesome.com/v4/cheatsheet/ */
+      blockquote.tip::before {
+        margin-left: 0.1em;
+        content: "\f0eb";
+        color: yellowgreen;
+        font-style: normal !important;
+      }
+      blockquote.note::before {
+        margin-left: -0.02em;
+        content: "\f27a";
+        color: skyblue;
+        font-style: normal !important;
+      }
+      blockquote.important::before {
+        margin-left: 0.05em;
+        content: "\f0f3";
+        color: violet;
+        font-style: normal !important;
+      }
+      blockquote.warning::before {
+        content: "\f06a";
+        color: orange;
+        font-style: normal !important;
+      }
+      blockquote.caution::before {
+        margin-left: 0.02em;
+        content: "\f071";
+        color: red;
+        font-style: normal !important;
+      }
+
+      sup.footnote-ref a::before {
+        content: '#';
+      }
+      sup.footnote-ref a {
+        margin-left: 0.25em;
+        margin-right: 0.25em;
+        font-weight: bold;
+      }
+
+
+      :root {
+        /* need offset: header + spacer in header */
+        /* m-1/p-1: 0.25rem  2: 0.5rem  3: 1.0rem  4: 1.5rem  5: 3.0rem */
+        --header-height: 11.5rem;  /* 8.5 + 3 */
+      }
+      @media screen
+      {
+        .print--page-break::before {
+          content: "------ 8< ------ PAGE BREAK FOR PDF ------ 8< ------";
+          width: 100%;
+          display: block;
+          text-align: center;
+          font-size: 0.5rem;
+          color: #abc;
+          border: 1px dashed #cde;
+          border-width: 1px 0px;
+          padding: 0.25rem 0px;
+          margin-bottom: 1rem;
+        }
+        .screen--d-none { display: none; }
+      }
+      @media print
+      {
+        @page {
+          margin: 0px;
+        }
+        #header-spacer {
+          height: var(--header-height) !important;
+          margin: 0px !important;   /* due to print preview script implementation */
+          padding: 0px !important;  /* due to print preview script implementation */
+        }
+        #footer {
+          border: none !important;
+        }
+        .print--page-break::before {
+          content: ""; /* empty string required */
+          display: block;
+          height: var(--header-height);  /* 6.0rem???? wapper margin+padding + section margin+padding */
+        }
+        .print--page-break + * {
+          margin-top: 0px;
+        }
+        .print--page-break { break-before: page; }
+        .print--hidden { visibility: hidden; }
+        .print--d-none { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- background fill need for PDF print -->
+    <div id="background-fill" class="vw-100 vh-100  bg-light   position-fixed" style="top: 0px; left: 0px; z-index: -2022;"></div>
+
+
+    {% if true %}
+      {% assign logo_background = page.logo_background | default: site.logo_background | default: "#00cce4" %}
+      <div class="col-2 col-sm-2 col-md-2 col-lg-2   pl-0 pl-sm-0 pl-md-0   fixed-top   ml-auto"  style="z-index: 9999;">
+        <a target="_blank" href='{{ page.logo_href | default: site.logo_href | default: "https://www.sator-imaging.com/" }}'>
+          <div class="pt-3 pt-md-4  px-0  pb-2 pb-md-3   ml-0 ml-md-2 ml-lg-2" style='width: fit-content; border-radius: 0px 0px 5% 5%; overflow: hidden; background: {{ logo_background }};'>
+            <img style='width: 12.5vw; max-width: 7rem;' src='{{ page.logo_src | default: site.logo_src | default: "https://avatars.githubusercontent.com/u/45192683" }}' />
+          </div>
+        </a>
+      </div>
+      {% if false %}
+        <script>
+          let img = $("img")[$("img").length-1];
+          img.src = 'https://avatars.githubusercontent.com/u/45192683';
+          $(img).parent().css("background", "#00cce4");
+        </script>
+      {% endif %}
+    {% endif %}
+
+
+    <!-- spacer - keep same height with header + spacer in header -->
+    <div id="header-spacer" class="pt-2 pt-sm-3 pt-md-4 pt-lg-5  pb-3 pb-md-4 pb-lg-5  mb-1">
+      <h1 class="my-2">&nbsp;</h1>
+      <p class="my-1">&nbsp;</p>
+    </div>
+    <!-- header -->
+    <header id="header" class="pt-2 pt-sm-3 pt-md-4 pt-lg-5  pb-3 pb-md-4 pb-lg-5  mb-1     fixed-top  row  no-gutters   bg-light">
+      <!-- spacer same with toc -->
+      <div class="col-0 col-sm-0 col-md-1 col-lg-2"></div>
+      <div class="col-10 col-sm-10 col-md-9 col-lg-8   px-5 px-md-3 px-lg-4   -border">
+        <h1 class="my-2   text-secondary  text-truncate   text-left">
+          {{ page.title | default: site.title }}
+        </h1>
+        <p class="my-1    text-secondary  text-truncate  text-right">
+          <span class="d-none  d-md-inline-block">
+            <small class="screen--d-none">View Online:</small>
+            <small class="print--d-none">Version:</small>
+            <a href="{{ site.github.url }}{{ page.url }}"><i class="fas fa-external-link-alt  mr-1  text-black-50"></i><small>Latest</small></a>
+            <script>
+              // check url existance
+              // https://stackoverflow.com/questions/333634/http-head-request-in-javascript-ajax
+              function UrlExists(lang, url_noext, callback)
+              {
+                let http = new XMLHttpRequest();
+                http.open('HEAD', (lang ? url_noext+'.'+lang : url_noext) + '.html');
+                http.onreadystatechange = function() {
+                  if (this.readyState == this.DONE) {
+                    callback(lang, url_noext, this.status != 404);
+                  }
+                };
+                http.send();
+              }
+              // callback for UrlExists
+              function UpdateHeaderFlagLink(lang, url_noext, isExists)
+              {
+                //console.log((lang ? url_noext+'.'+lang : url_noext) + '.html');
+                if (!isExists) {
+                  // english special, try again with no language extension
+                  if ('en' == lang) UrlExists(null, url_noext, UpdateHeaderFlagLink);
+                  // README.md special
+                  if (!lang) {
+                    if (url_noext.search(/README$/) > -1) {  // || url_noext.search(/\/$/) > -1) {
+                      //url_noext = url_noext.replace(/\/$/, '/README');
+                      url_noext = url_noext.replace(/README$/, 'index');
+                      UrlExists(null, url_noext, UpdateHeaderFlagLink);
+                    }
+                  }
+                  return;
+                }
+                let url = (lang ? url_noext+'.'+lang : url_noext) + '.html';
+                lang = lang ?? 'en';  // fix lang after url building.
+                let rootEl = $('#header--lang-' + lang);
+                $(rootEl).removeClass('print--d-none');  // show link in PDF if exists.
+                $(rootEl).children('a')[0].href = url;
+                $($(rootEl).children('a')[0]).append('<small class="ml-1">' + lang.toUpperCase() + '</small>');
+              }
+              //
+              // write links
+              //
+              let testMode = location.protocol == 'file:';
+              let surl = new URL(testMode ? 'https://satorimaging.github.io/OpenManual/index.html' : '{{ site.github.url }}{{ page.url }}');
+              let slang = testMode ? '' : '{{ page.lang | default: "" }}';
+              
+              //
+              //  TODO: multi-language in one document
+              //    Add class="lang--ja" to support multilingual visibility function.
+              //    To create multilingual document, set lang in FrontMatter to comma separated value: 'ja, en-US, zh-CN'
+              //
+              slang = slang.split(',');
+              for (let i = 0; i < slang.length; i++) {
+                slang[i] = slang[i].trim();
+              }
+              slang = slang[0];
+              // multi-language feature not yet implemented
+
+              slang = slang.split('-')[0]; // no country code.
+              slang = slang ? slang : GetLanguageFromURL(surl.pathname);
+              for(let lang_country of ["en-US", "ja-JP", "zh-CN"])
+              {
+                let [tlang, tcountry] = lang_country.split('-');
+                let turl = surl.protocol + '//' + surl.hostname.split('.').join('-') + '.translate.goog' + surl.pathname + '?_x_tr_sl=' + slang + '&_x_tr_tl=' + tlang;
+                document.write('   <span id="header--lang-'+tlang+'" class="print--d-none  header--lang"><a href="'+turl+'"><span class="flag-icon flag-icon-'+tcountry.toLowerCase()+' -flag-icon-squared"></span></a></span>');
+                // replace from google translate to github page if exists.
+                let turl_github_noext = surl.href.replace(/\.[^\/]+$/, '');
+                turl_github_noext = turl_github_noext.replace(/\/$/, '/README');  // if ends with / => /README
+                // let turl_github = turl_github_nolang + '.' + tlang + '.html'; // not .md
+                UrlExists(tlang, turl_github_noext, UpdateHeaderFlagLink);
+              }
+            </script>
+          </span>
+          {% if page.author %}
+            <span class="d-inline-block  ml-3">
+              <small>written by</small>
+              {% for author in page.author %}
+                {% assign author_github = author | replace_first: '@', 'https://github.com/' %}
+                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                  {% if author != author_github %}
+                    <span itemprop="name"><a href="{{ author_github }}">{{ author }}</a></span>
+                  {% else %}
+                    <span itemprop="name">{{ author }}</span>
+                  {% endif %}
+                </span>
+                {% if forloop.last == false %}, {% endif %}
+              {% endfor %}
+            </span>
+          {% endif %}
+          {% if page.date %}
+            <span class="d-inline-block  ml-2">
+              <small>on</small>
+              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+                {{ page.date | date: "%b %-d, %Y" }}
+              </time>
+            </span>
+          {% endif %}
+        </p>
+      </div>
+    </header>
+
+
+
+
+
+    <div id="section-contents" class="-py-5   row  no-gutters">
+      <!-- spacer behind table of contents, need to place main section next to toc -->
+      <div class="col-0 col-sm-0 col-md-1 col-lg-3"></div>
+      <nav class="d-none d-lg-block  col-3   -my-5   pl-2 pr-3  py-1  text-right  position-fixed  print--hidden">
+        <ul></ul><!-- placeholder for table of contents -->
+        <div id="printing-button">
+          <script>
+            // show printing button if ready to print
+            document.addEventListener('DOMContentLoaded', (event) => {
+              if ($("section .print--page-break").length > 0) {
+                $("#printing-button").html('<small>Ready for</small> &#128424; <a href="javascript: window.print();" style="text-decoration: none;">A4 Print</a>');
+              }
+            });
+          </script>
+        </div>
+        <small>
+          Go to <a href="{{ site.github.url }}/">Index</a>
+          <br />
+          <script>
+            let editUrl = '{{ page.url }}';
+            if (editUrl.search(/\.html$/i) > -1) {
+              editUrl = editUrl.replace(/\.html$/i, '.md');
+            } else {
+              editUrl += 'README.md';
+            }
+            editUrl = editUrl.replace(/^\/{{ site.github.repository_name }}/, '');
+            editUrl = 'https://github.com/{{ site.github.repository_nwo }}/edit/master' + editUrl;
+            document.write('Edit in <a href="'+editUrl+'">Markdown</a><br />');
+          </script>
+          VS Code on <a href="https://github.dev/{{ site.github.repository_nwo }}">Repository</a>
+        </small>
+      </nav>
+      <section class="col-12 col-sm-12 col-md-10 col-lg-7   px-5 px-md-3  pl-lg-3 pr-lg-4   -my-5 -border">
+        {% if page.url == '/' %}
+          <div id="page-links"><!-- this div tag must be the first child of section tag -->
+            <h1 id="page-links--older-smartphone">Open Manual Index</h1>
+          </div>
+          <script> // auto-generate page index
+            function AddLink(dir, url, date, title, lang, snippet) {
+              dir = dir.replace(/^\//, '').replace(/\/$/, '');
+
+              // ignore root README.md
+              let isRootIndex = false;
+              if (dir == "") isRootIndex = true;
+
+              dir = dir == "" ? "Miscellaneous" : dir;
+
+              // remove default h1 tag
+              let defaultEl = document.querySelector('#page-links--older-smartphone');
+              if (defaultEl) defaultEl.remove();
+
+              let rootEl = document.querySelector('#page-links');
+              let dirId = 'page-links--'+escape(dir.toLowerCase().replace(/ /g, '-')).replace(/[^\w-]+/g,'');
+              let dirEl = document.querySelector('#'+dirId);
+              if(!dirEl) {
+                let dirParentEl = document.createElement('div');
+                rootEl.appendChild(dirParentEl);
+                let dirLabel = document.createElement('h3');
+                dirLabel.innerText = dir.replace(/[-_]/g, ' ')
+                                      .replace(/([A-Z0-9]+)([A-Z0-9][a-z])/g, '$1 $2')  // UIClass -> UI Class
+                                      .replace(/\s*([A-Z0-9]+)/g, ' $1')  // PascalCase -> Pascal Case
+                                      .trim();
+
+                // SP: update directory display label
+                switch (dirLabel.innerText)
+                {
+                  // NOTE: update `.innerText`
+                  case "Svg Toolkit":
+                    dirLabel.innerText = "SVG Toolkit";
+                    break;
+                }
+
+                dirParentEl.appendChild(dirLabel);
+                dirEl = document.createElement('ul');
+                dirEl.id = dirId;
+                dirParentEl.appendChild(dirEl);
+              }
+              // remove existing li element and create new one
+              let linkEl = document.querySelector('#page-links--default').getElementsByTagName('li')[0];
+              if (linkEl) linkEl.remove();
+
+              linkEl = document.createElement('li');
+              linkEl.classList.add('text-muted');
+              let country = {'en':'us','ja':'jp','zh':'cn'}[lang] ?? 'un';
+              linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>&nbsp;   <span class="flag-icon flag-icon-'+country+'"></span>   <small class="text-black-50">'+date+'</small><br /><small>' + snippet + '</small>';
+              dirEl.appendChild(linkEl);
+              
+              // remove root index.
+              if (isRootIndex) {
+                dirEl.parentElement.remove();
+              }
+            }
+          </script>
+          <ul id="page-links--default">
+            {% for page in (site.pages | sort: "date", "first" | reverse) %}
+              {% if page.title %}
+                <li><a href="{{ site.github.url }}{{ page.url }}">{{ page.title }}</a></li>
+                <script>
+                  var docUrl = '{{ site.github.url }}{{ page.url }}';
+                  var docLang = "{{ page.lang | default: '' }}";
+                  docLang = docLang.split('-')[0];
+                  docLang = docLang ? docLang : GetLanguageFromURL(docUrl);
+                  AddLink('{{ page.dir }}',
+                          docUrl,
+                          '{{ page.date | date: "%b-%d-%Y" }}',
+                          '{{ page.title }}',
+                          docLang,
+                          docLang == 'en'
+                            ? '{{ page.excerpt | default: page.content | newline_to_br | replace: "<br />", " " | strip_html | strip_newlines | truncatewords: 25 }}'
+                            : '{{ page.excerpt | default: page.content | newline_to_br | replace: "<br />", " " | strip_html | strip_newlines | truncate: 96 }}'
+                  );
+                </script>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          <hr class="my-5" />
+        {% endif %}
+        {% if false %}
+          <h2>H2 : 見出し１ （最後の閉じカッコは Nav 非表示）</h2>
+          <p>Test Body</p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+          <blockquote>
+            <p>
+              Here is blockquote.<br />
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p>Second Paragraph.</p>
+            <cite>Cite from Wikipedia</cite>
+          </blockquote>
+          <p>Test Body</p>
+          <p>Test Body</p>
+          <h3>H3 : 見出し２ （最後の閉じカッコは Nav 非表示）</h3>
+          <p>テスト本文</p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+          <p>
+            <p>Rouge <code class="language-plaintext highlighter-rouge">inline-code</code></p>
+            <div class="language-yaml highlighter-rouge"><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**</span>
+<span class="cm"> * Does a thing</span>
+<span class="cm"> */</span>
+<span class="kd">function</span> <span class="nx">helloWorld</span><span class="p">(</span><span class="nx">param1</span><span class="p">,</span> <span class="nx">param2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">something</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// Do something</span>
+  <span class="k">if</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="nx">something</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Hello, world!&#39;</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// @TODO comment</span>
+<span class="p">}</span></code></pre></div></div>
+          </p>
+          <p>
+            Here is page break for print.
+            <div class="print--page-break"></div>
+          </p>
+          <h4>H4 : 見出し３ （最後の閉じカッコは Nav 非表示）</h4>
+          <p>
+            The third page.
+          </p>
+          <h5>H5 : Nav-Scrollbar { Test? } / [START]</h5>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h6>H6 : Nav-Scrollbar =&gt; (#Test)</h6>
+          <h5>H5 : Nav-Scrollbar &lt; Test! | [ END ]</h5>
+        {% endif %}
+
+        {{ content }}
+        <!-- spacer for screen -->
+        <div class="print--d-none  vh-100"></div>
+
+        <script>
+          for (const bq of document.querySelectorAll("#section-contents > section  blockquote > p"))
+          {
+            //let fa_icon = '';
+            let bq_class = '';
+            if (bq.innerHTML.startsWith('[!TIP]'))
+              //fa_icon = '<i class="fa-regular fa-lightbulb"></i>';
+              bq_class = 'tip';
+            else if (bq.innerHTML.startsWith('[!NOTE]'))
+              //fa_icon = '<i class="fa-regular fa-message"></i>';
+              bq_class = 'note';
+            else if (bq.innerHTML.startsWith('[!IMPORTANT]'))
+              //fa_icon = '<i class="fa-regular fa-bell"></i>';
+              bq_class = 'important';
+            else if (bq.innerHTML.startsWith('[!WARNING]'))
+              //fa_icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+              bq_class = 'warning';
+            else if (bq.innerHTML.startsWith('[!CAUTION]'))
+              //fa_icon = '<i class="fa-solid fa-triangle-exclamation"></i>';
+              bq_class = 'caution';
+
+            if (bq_class == '')
+              continue;
+
+            bq.innerHTML = bq.innerHTML.replace(/^\[\![^\]]+\]/, '');
+            bq.parentElement.classList.add(bq_class);
+          }
+        </script>
+      </section>
+    </div>
+
+    <footer id="footer" class="bg-light  fixed-bottom  -row  text-secondary  border-top  py-1 py-md-2 py-lg-2">
+      <p class="px-5  my-0 my-lg-0  text-center  text-truncate">
+        <span class="d-none d-sm-inline">Copyright</span>
+        &copy; {{ site.time | date: "%Y" }} Sator Imaging, all rights reserved.
+      </p>
+      <p class="d-none d-md-block   px-5   my-0 my-lg-0   text-center  text-truncate   print--hidden">
+        <small id="footer--project-description"><a href="{{ site.github.repository_url }}">{{ site.github.repository_nwo }}</a> &mdash; {{ site.github.project_tagline }}</small>
+      </p>
+    </footer>
+
+    <div class="print--hidden   fixed-bottom  text-right  px-1  ml-auto  small  text-black-50   d-none d-lg-block" style="width: fit-content;">
+      <script>
+        let res = {"Mobile":[576,800],"Tablet":[768,960],"PC":[1200,1200],"A4 Print":[905,1280]};//[678,960][905,1280],"4x3":[1600,1200],"16x9":[1920,1080]
+        for(let key in res) {
+          document.write("<a href=\"javascript: url=new URL(location); url.search='?m=" + key.replace(/ /g, '-').toLowerCase() + "'; window.open(url,'_blank','innerWidth="+res[key][0]+",innerHeight="+res[key][1]+",left="+Math.floor((screen.width-res[key][0])*0.5)+"')\">"+key+"</a>");
+          if(key != Object.keys(res)[Object.keys(res).length-1]) document.write(' | ');
+        };
+      </script>
+      <!--
+      <a href='javascript:$("body").css("overflow",$("body").css("overflow")!="hidden"?"hidden":"unset")'>Scrollbar</a>
+      -->
+    </div>
+
+    <!-- scale page 75% for print preview (72dpi to 96dpi, screen to css dpi for print) -->
+    <script>
+      let options = {};
+      location.search.substring(1).split('&').forEach(x => {
+        let [k,v] = x.split('=');
+        options[k] = v;
+      });
+      if(options['m'] == 'a4-print') {
+        $('*').each(function()
+        {
+          if (this.id == 'header' || this.id == 'footer') {
+            $(this).removeClass('bg-light');
+            $(this).css('background-color', '#f8f9faC8');
+          }
+          if (this.id == 'header-spacer') {
+            $(this).css('height', 'var(--header-height)');
+            $(this).css('margin', '0px');
+            $(this).css('padding', '0px');
+            $(this).css('overflow', 'hidden');
+            return;
+          }
+          if (this.id == 'header') {
+            $(this).css('height', 'var(--header-height)');
+            $(this).css('border-bottom', '1px dashed #ddd');
+            return;
+          }
+          if (this.id == 'footer--project-description') {
+            $(this).addClass('d-none');
+            return;
+          }
+          // do it
+          if ($(this).hasClass('print--hidden')) {
+            $(this).addClass('invisible');//.css('visibility', 'hidden');
+          }
+          if ($(this).hasClass('print--d-none')) {
+            $(this).addClass('d-none');//.css('display', 'none');
+          }
+          // dpi control
+          for(let p of ['font-size', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left']) {
+            if ('font-size' == p && !['body','h1','h2','h3','h4','h5','h6'].includes(this.tagName.toLowerCase())) {
+              continue;
+            }
+            let value = $(this).css(p).replace(/[^0-9]*$/, '');
+            let unit = $(this).css(p).replace(/^[0-9]*/, '');
+            if(0 == value) continue;
+            $(this).css(p, (value*0.775) + unit); // 72dpi to 96dpi, 0.75 + magic number 0.025
+          }
+        });
+        $('img').each(function() {
+          let fn = function() { setTimeout(x => {
+            $(this).css('width', $(this).outerWidth(true)*0.875+'px');
+          }, 128)};
+          //fn();  ???
+          this.addEventListener("load", fn);
+        });
+      }
+    </script>
+
+    <script src="{{ '/assets/js/scale.fix.js' | relative_url }}"></script>
+
+  </body>
+</html>
