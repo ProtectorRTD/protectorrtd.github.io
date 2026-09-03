@@ -1,4 +1,4 @@
 ---
-title: "My Open Manual"
+title: "ProtectoRTD"
 lang: ru-RU
 ---

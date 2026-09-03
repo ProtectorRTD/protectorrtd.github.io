@@ -46,9 +46,6 @@
     <!-- TODO: Font Awesome CDN update if required -->
     <script crossorigin='anonymous' src='https://kit.fontawesome.com/a54fde8722.js'></script>
 
-    <!-- TODO: flag icons css -->
-    <link crossorigin="anonymous" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/css/flag-icons.min.css" integrity="sha512-UwbBNAFoECXUPeDhlKR3zzWU3j8ddKIQQsDOsKhXQGdiB5i3IHEXr9kXx82+gaHigbNKbTDp3VY/G6gZqva6ZQ==" />
-
     <!-- TODO: Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,6 +58,10 @@
 
     <!-- script -->
     <script>
+      // Подписи языковых версий вместо флагов.
+      // ru = язык оригинала, en = английская версия.
+      const LANG_LABELS = { 'ru': 'orig', 'en': 'eng' };
+
       // Get Language from URL
       function GetLanguageFromURL(url)
       {
@@ -272,14 +273,72 @@
 
 
 
-      .flag-icon
+      /* Текстовая метка версии: ORIG / ENG */
+      .lang-badge
       {
-        vertical-align: 0.075em;
-        width: 1.375em;
+        display: inline-block;
+        padding: 0 0.4em;
+        border: 1px solid #ced4da;
+        border-radius: 0.2rem;
+        font-size: 0.72em;
+        line-height: 1.5;
+        letter-spacing: 0.06em;
+        color: #6c757d;
+        text-transform: uppercase;
+        vertical-align: 0.1em;
+        text-decoration: none;
       }
-      .flag-icon-jp
+      a:hover > .lang-badge
       {
-        border: 1px solid #e8e8e8;
+        color: #0366d6;
+        border-color: #0366d6;
+      }
+
+      /* Теги */
+      .tag-badge
+      {
+        display: inline-block;
+        padding: 0 0.55em;
+        margin: 0 0.15em 0.2em 0;
+        border: 1px solid transparent;
+        border-radius: 0.75rem;
+        background: #eef1f4;
+        color: #55606b;
+        font-size: 0.72em;
+        line-height: 1.7;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      a.tag-badge:hover
+      {
+        color: #0366d6;
+        border-color: #adb5bd;
+        text-decoration: none;
+      }
+      #tag-filter
+      {
+        margin: 0 0 1.5rem 0;
+      }
+      #tag-filter .tag-badge
+      {
+        cursor: pointer;
+        user-select: none;
+      }
+      #tag-filter .tag-badge:hover
+      {
+        border-color: #adb5bd;
+      }
+      #tag-filter .tag-badge.active
+      {
+        background: #0366d6;
+        color: #fff;
+        border-color: #0366d6;
+      }
+      #tag-filter .tag-filter-label
+      {
+        font-size: 0.75em;
+        color: #adb5bd;
+        margin-right: 0.4em;
       }
 
       section > *:first-child,
@@ -564,8 +623,7 @@
                 lang = lang ?? 'en';  // fix lang after url building.
                 let rootEl = $('#header--lang-' + lang);
                 $(rootEl).removeClass('print--d-none');  // show link in PDF if exists.
-                $(rootEl).children('a')[0].href = url;
-                $($(rootEl).children('a')[0]).append('<small class="ml-1">' + lang.toUpperCase() + '</small>');
+                $(rootEl).children('a')[0].href = url;  // настоящая страница вместо Google Translate
               }
               //
               // write links
@@ -592,7 +650,7 @@
               {
                 let [tlang, tcountry] = lang_country.split('-');
                 let turl = surl.protocol + '//' + surl.hostname.split('.').join('-') + '.translate.goog' + surl.pathname + '?_x_tr_sl=' + slang + '&_x_tr_tl=' + tlang;
-                document.write('   <span id="header--lang-'+tlang+'" class="print--d-none  header--lang"><a href="'+turl+'"><span class="flag-icon flag-icon-'+tcountry.toLowerCase()+' -flag-icon-squared"></span></a></span>');
+                document.write('   <span id="header--lang-'+tlang+'" class="print--d-none  header--lang"><a href="'+turl+'"><small class="lang-badge">'+(LANG_LABELS[tlang] ?? tlang)+'</small></a></span>');
                 // replace from google translate to github page if exists.
                 let turl_github_noext = surl.href.replace(/\.[^\/]+$/, '');
                 turl_github_noext = turl_github_noext.replace(/\/$/, '/README');  // if ends with / => /README
@@ -615,6 +673,11 @@
                 </span>
                 {% if forloop.last == false %}, {% endif %}
               {% endfor %}
+            </span>
+          {% endif %}
+          {% if page.tags and page.tags.size > 0 %}
+            <span class="d-inline-block  ml-3">
+              {% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}
             </span>
           {% endif %}
           {% if page.date %}
@@ -667,10 +730,12 @@
       <section class="col-12 col-sm-12 col-md-10 col-lg-7   px-5 px-md-3  pl-lg-3 pr-lg-4   -my-5 -border">
         {% if page.url == '/' %}
           <div id="page-links"><!-- this div tag must be the first child of section tag -->
+            <div id="tag-filter"></div>
             <h1 id="page-links--older-smartphone">{{ site.title }}</h1>
           </div>
           <script> // auto-generate page index
-            function AddLink(dir, url, date, title, lang, snippet) {
+            const ALL_TAGS = new Set();
+            function AddLink(dir, url, date, title, lang, snippet, tags) {
               dir = dir.replace(/^\//, '').replace(/\/$/, '');
 
               // ignore root README.md
@@ -712,8 +777,14 @@
 
               linkEl = document.createElement('li');
               linkEl.classList.add('text-muted');
-              let country = {'en':'us','ru':'ru','ja':'jp','zh':'cn'}[lang] ?? 'un';
-              linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>&nbsp;   <span class="flag-icon flag-icon-'+country+'"></span>   <small class="text-black-50">'+date+'</small><br /><small>' + snippet + '</small>';
+              let langLabel = LANG_LABELS[lang] ?? lang;
+              let tagList = (tags || '').split('|').map(t => t.trim()).filter(Boolean);
+              tagList.forEach(t => ALL_TAGS.add(t));
+              linkEl.dataset.tags = tagList.join('|').toLowerCase();
+              let tagHtml = tagList.map(t => '<span class="tag-badge">' + t + '</span>').join('');
+              linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>&nbsp;   <small class="lang-badge">'+langLabel+'</small>   <small class="text-black-50">'+date+'</small>'
+                               + (tagHtml ? '<br />' + tagHtml : '')
+                               + '<br /><small>' + snippet + '</small>';
               dirEl.appendChild(linkEl);
               
               // remove root index.
@@ -738,12 +809,61 @@
                           docLang,
                           docLang == 'en'
                             ? '{{ page.excerpt | default: page.content | newline_to_br | replace: "<br />", " " | strip_html | strip_newlines | truncatewords: 25 }}'
-                            : '{{ page.excerpt | default: page.content | newline_to_br | replace: "<br />", " " | strip_html | strip_newlines | truncate: 96 }}'
+                            : '{{ page.excerpt | default: page.content | newline_to_br | replace: "<br />", " " | strip_html | strip_newlines | truncate: 96 }}',
+                          '{{ page.tags | join: "|" }}'
                   );
                 </script>
               {% endif %}
             {% endfor %}
           </ul>
+          <script>
+            // Фильтр по тегам. Работает без плагинов, целиком на стороне браузера.
+            (function () {
+              let filterEl = document.querySelector('#tag-filter');
+              if (!filterEl || ALL_TAGS.size === 0) return;
+
+              let active = null;
+
+              function apply() {
+                document.querySelectorAll('#page-links li[data-tags]').forEach(li => {
+                  let tags = (li.dataset.tags || '').split('|').filter(Boolean);
+                  li.hidden = active !== null && !tags.includes(active);
+                });
+                // прячем разделы, в которых после фильтрации ничего не осталось
+                document.querySelectorAll('#page-links ul').forEach(ul => {
+                  if (ul.id === 'page-links--default') return;
+                  let visible = [...ul.children].some(li => !li.hidden);
+                  if (ul.parentElement) ul.parentElement.hidden = !visible;
+                });
+                filterEl.querySelectorAll('.tag-badge').forEach(chip => {
+                  chip.classList.toggle('active', chip.dataset.tag === active);
+                });
+              }
+
+              let label = document.createElement('span');
+              label.className = 'tag-filter-label';
+              label.innerText = 'теги:';
+              filterEl.appendChild(label);
+
+              [...ALL_TAGS].sort((a, b) => a.localeCompare(b)).forEach(tag => {
+                let chip = document.createElement('span');
+                chip.className = 'tag-badge';
+                chip.dataset.tag = tag.toLowerCase();
+                chip.innerText = tag;
+                chip.addEventListener('click', () => {
+                  active = (active === chip.dataset.tag) ? null : chip.dataset.tag;
+                  history.replaceState(null, '', active ? '?tag=' + encodeURIComponent(active) : location.pathname);
+                  apply();
+                });
+                filterEl.appendChild(chip);
+              });
+
+              // ?tag=... в адресе — открыть главную сразу с фильтром
+              let wanted = new URLSearchParams(location.search).get('tag');
+              if (wanted) active = wanted.toLowerCase();
+              apply();
+            })();
+          </script>
           <hr class="my-5" />
         {% endif %}
         {% if false %}
