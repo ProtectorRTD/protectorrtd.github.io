@@ -245,7 +245,10 @@
       /* Общий масштаб шрифтов: почти всё в макете задано в rem/em,
          поэтому один этот процент уменьшает сайт целиком. */
       html {
-        font-size: 90%;
+        /* Базовый кегль всего сайта. 135% ≈ то, как страница выглядит
+           при зуме браузера 150%. Один этот процент масштабирует всё:
+           почти весь макет задан в rem/em. */
+        font-size: 135%;
       }
 
       /* Обязательно: без этого правила li.hidden в фильтре ничего не прячет. */
@@ -276,13 +279,59 @@
         -font-family: 'M PLUS 1p', sans-serif;
       }
 
-      /* правая колонка шапки: дата, теги статьи, фильтры главной */
-      .header--meta {
-        font-size: 0.85em;
-        line-height: 1.7;
+      /* Панель справа вверху: название сайта + фильтры (на главной)
+         или дата, теги и кнопка PDF (в статье). */
+      .footer--avatar {
+        height: 1.5em;
+        width: 1.5em;
+        border-radius: 50%;
+        object-fit: cover;
+        vertical-align: -0.4em;
+        margin-right: 0.4em;
       }
-      .header--meta > span {
-        margin-top: 0.1rem;
+
+      .header--panel {
+        display: inline-block;
+        max-width: 100%;
+        text-align: right;
+        padding: 0.4rem 0.75rem 0.5rem;
+        border: 1px solid #e1e5e8;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 1px 3px rgba(73, 80, 87, 0.06);
+      }
+      .header--panel-title {
+        font-weight: 100;
+        font-size: 1.3rem;
+        line-height: 1.35;
+        letter-spacing: 0.01em;
+        margin-bottom: 0.3rem;
+      }
+      .header--panel-title a,
+      .header--panel-title a:hover {
+        color: #6c757d;
+        text-decoration: none;
+      }
+      .header--panel-meta {
+        font-size: 0.72rem;
+        line-height: 1.9;
+        color: #868e96;
+      }
+      .header--pdf {
+        display: inline-block;
+        margin-top: 0.15rem;
+        padding: 0 0.5em;
+        border: 1px solid #ced4da;
+        border-radius: 0.2rem;
+        font-size: 0.95em;
+        color: #6c757d;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .header--pdf:hover {
+        color: #0366d6;
+        border-color: #0366d6;
+        text-decoration: none;
       }
 
       .header--lang  a {
@@ -596,6 +645,30 @@
         .print--page-break { break-before: page; }
         .print--hidden { visibility: hidden; }
         .print--d-none { display: none; }
+
+        /* Печать и «Сохранить как PDF»: фиксированные шапку и подвал
+           возвращаем в поток, служебные блоки убираем совсем. */
+        #header { position: static !important; }
+        #header-spacer { display: none !important; }
+        #footer { position: static !important; }
+        .header--panel { display: none !important; }
+        nav { display: none !important; }
+
+        /* overflow:hidden на печати режет содержимое на границе страниц */
+        header, section, footer { overflow: visible !important; }
+
+        /* колонки макета в PDF не нужны — текст на всю ширину листа */
+        #header > div:first-child { display: none !important; }
+        #header > div:last-child,
+        #section-contents > section {
+          max-width: 100% !important;
+          flex: 0 0 100% !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+        }
+        #section-contents > div { display: none !important; }
+
+        @page { margin: 14mm 12mm; }
       }
     </style>
   </head>
@@ -629,29 +702,39 @@
       <!-- spacer same with toc -->
       <div class="col-0 col-sm-0 col-md-1 col-lg-2"></div>
       <div class="col-10 col-sm-10 col-md-9 col-lg-8   px-5 px-md-3 px-lg-4   -border">
-        <h1 class="my-2   text-secondary  text-truncate   text-center">
-          {{ page.title | default: site.title }}
-        </h1>
-        <p class="my-1    text-secondary  text-right   header--meta">
-          {% if page.date %}
-            <span class="d-block">
-              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
-            </span>
-          {% endif %}
-          {% if page.tags and page.tags.size > 0 %}
-            <span class="d-block">
-              {% assign tag_lang = page.lang | default: site.lang | split: "-" | first %}
-              {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
-              {% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}
-            </span>
-          {% endif %}
-          {% if page.url == '/' %}
-            <span id="index-filters" class="d-block">
-              <span class="filter-row"><span class="filter-label">версия:</span><span id="lang-filter"></span></span>
-              <span class="filter-row"><span class="filter-label">теги:</span><span id="tag-filter"></span></span>
-            </span>
-          {% endif %}
-        </p>
+        {% comment %} На главной заголовок страницы совпадает с названием сайта — не дублируем, он есть в панели. {% endcomment %}
+        {% if page.url != '/' %}
+          <h1 class="my-2   text-secondary  text-truncate   text-center">
+            {{ page.title | default: site.title }}
+          </h1>
+        {% endif %}
+        <div class="text-right">
+          <div class="header--panel">
+            <div class="header--panel-title">
+              <a href="{{ site.github.url }}/">{{ site.title }}</a>
+            </div>
+            {% if page.url == '/' %}
+              <div id="index-filters">
+                <div class="filter-row"><span class="filter-label">версия:</span><span id="lang-filter"></span></div>
+                <div class="filter-row"><span class="filter-label">теги:</span><span id="tag-filter"></span></div>
+              </div>
+            {% else %}
+              <div class="header--panel-meta">
+                {% if page.date %}
+                  <div><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time></div>
+                {% endif %}
+                {% if page.tags and page.tags.size > 0 %}
+                  {% assign tag_lang = page.lang | default: site.lang | split: "-" | first %}
+                  {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
+                  <div>{% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}</div>
+                {% endif %}
+                <div class="print--d-none">
+                  <a class="header--pdf" href="#" onclick="window.print(); return false;" title="Открыть диалог печати и выбрать «Сохранить как PDF»"><i class="fas fa-file-pdf  mr-1"></i>Скачать PDF</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </header>
 
@@ -981,7 +1064,7 @@
         &copy; {{ site.time | date: "%Y" }} ProtectoRTD. All rights reserved.
       </p>
       <p class="d-none d-md-block   px-5   my-0 my-lg-0   text-center  text-truncate   print--hidden">
-        <small id="footer--project-description"><a href="{{ site.github.repository_url }}">{{ site.github.repository_nwo }}</a> &mdash; {{ site.github.project_tagline }}</small>
+        <small id="footer--project-description"><img class="footer--avatar" src="/assets/img/favicon.png" alt="" />{{ site.github.project_tagline }}</small>
       </p>
     </footer>
 
