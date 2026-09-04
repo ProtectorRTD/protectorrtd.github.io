@@ -81,10 +81,17 @@
       // https://github.com/pages-themes/leap-day/blob/master/assets/js/main.js
       // modified to support non-english characters.
       $(function() {
+        // Оглавление строим по заголовкам ВНУТРИ текста статьи.
+        // Заголовок самой статьи (.article--title) в него не берём: он и так
+        // написан крупно прямо над текстом, дублировать его слева незачем.
+        const tocHeadings = () =>
+          $("section h1, section h2, section h3, section h4, section h5, section h6")
+            .not('.article--title');
+
         // find top-most header tag.
         let topMostHeaderTag = 'h1';
         for (let i = 1; i <= 6; i++) {
-          if ($("section h"+i).length == 0) continue;
+          if (tocHeadings().filter('h' + i).length == 0) continue;
           topMostHeaderTag = 'h' + i;
           break;
         }
@@ -95,7 +102,7 @@
         const gfmPunctuationAscii = /[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]/g;  // don't remove -'s
         const gfmPunctuationUnicode = /[\p{Connector_Punctuation}\p{Dash_Punctuation}\p{Close_Punctuation}\p{Final_Punctuation}\p{Initial_Punctuation}\p{Other_Punctuation}\p{Open_Punctuation}]/gu;
         // auto anchor & nav links creation
-        $("section h1, section h2, section h3, section h4, section h5, section h6").each(function() {
+        tocHeadings().each(function() {
           // replace - to space first due to gfmPunctuationUnicode removes -'s.
           let anchorName = this.innerText.toLowerCase().replace(/\-/g, ' ').replace(gfmPunctuationAscii, '').replace(gfmPunctuationUnicode, '').replace(/\p{Space_Separator}/gu, '-');
           $("nav ul").append("<li class='tag-" + this.nodeName.toLowerCase() + "'><a href='#" + anchorName + "'>" + $(this).text().replace(/）$/, '') + "</a></li>");
@@ -841,18 +848,6 @@
         </div>
         <small>
           Go to <a href="{{ site.github.url }}/">Index</a>
-          <br />
-          <script>
-            let editUrl = '{{ page.url }}';
-            if (editUrl.search(/\.html$/i) > -1) {
-              editUrl = editUrl.replace(/\.html$/i, '.md');
-            } else {
-              editUrl += 'README.md';
-            }
-            editUrl = editUrl.replace(/^\/{{ site.github.repository_name }}/, '');
-            editUrl = 'https://github.com/{{ site.github.repository_nwo }}/edit/main' + editUrl;
-            document.write('Edit in <a href="'+editUrl+'">Markdown</a><br />');
-          </script>
         </small>
       </nav>
       <section class="col-12 col-sm-12 col-md-10 col-lg-7   px-5 px-md-3  pl-lg-3 pr-lg-4   -my-5 -border">
