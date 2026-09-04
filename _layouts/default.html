@@ -128,7 +128,7 @@
           event.preventDefault();
         });
         // nav height = 100vh - header - footer - 4px (magic number??? top/bottom border height x 2, header & footer)
-        $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px - '+ $("#footer").outerHeight(true) +'px)');
+        $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px)');
 
         // Шапка зафиксирована, а под ней стоит распорка той же высоты.
         // Теперь в шапке может быть несколько строк (дата, теги, фильтры),
@@ -138,7 +138,7 @@
           let spacer = document.querySelector('#header-spacer');
           if (!h || !spacer) return;
           spacer.style.height = h.getBoundingClientRect().height + 'px';
-          $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px - ' + $("#footer").outerHeight(true) + 'px)');
+          $("nav").css('height', 'calc(100vh - ' + $("#header").outerHeight(true) + 'px)');
         }
         window.SyncHeaderSpacer = SyncHeaderSpacer;
         SyncHeaderSpacer();
@@ -283,10 +283,19 @@
          фильтры (на главной) или дата/теги/PDF (в статье) справа.
          Содержимое центрируется в контейнере фиксированной ширины. */
       #header {
-        border-bottom: 1px solid #e6e9ec;
+        /* Серая полоса панели. Меняется здесь, одним местом. */
+        background: #e7eaec;
+        border-bottom: 1px solid #d5d9dd;
+      }
+      .header--bar .tag-badge {
+        background: #f4f6f7;   /* на сером фоне капсулы должны быть светлее */
       }
       #header-spacer {
         min-height: 5rem;   /* страховка до срабатывания SyncHeaderSpacer() */
+      }
+      /* воздух между панелью и первой статьёй */
+      #section-contents {
+        padding-top: 2.5rem;
       }
       .header--bar {
         display: flex;
@@ -449,10 +458,11 @@
         color: #fff;
         border-color: #0366d6;
       }
-      #lang-filter
+      /* разделитель принадлежит ряду тегов, чтобы он исчезал вместе с ним */
+      #tag-filter:not([hidden])
       {
-        padding-right: 0.5rem;
-        border-right: 1px solid #e1e5e8;
+        padding-left: 0.9rem;
+        border-left: 1px solid #c9ced3;
       }
       #lang-filter .tag-badge
       {
@@ -718,7 +728,7 @@
     <!-- spacer - keep same height with header + spacer in header -->
     <div id="header-spacer"><!-- высоту выставляет SyncHeaderSpacer(); min-height — страховка, если JS не сработал --></div>
     <!-- header -->
-    <header id="header" class="fixed-top   bg-light">
+    <header id="header" class="fixed-top">
       <div class="header--bar">
         <a class="header--brand" href="{{ site.github.url }}/">
           <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
@@ -826,9 +836,9 @@
               tagList.forEach(t => TAGS_BY_LANG[langLabel].set(t.toLowerCase(), t));
               linkEl.dataset.lang = langLabel;
               linkEl.dataset.tags = tagList.join('|').toLowerCase();
-              let tagHtml = tagList.map(t => '<span class="tag-badge">' + t + '</span>').join('');
+              // Теги у каждой строки не рисуем — список должен оставаться списком статей.
+              // Сами теги никуда не делись: они в front matter, видны в статье и работают в ?tag=.
               linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>   <small class="text-black-50">'+date+'</small>'
-                               + (tagHtml ? '<br />' + tagHtml : '')
                                + '<br /><small>' + snippet + '</small>';
               dirEl.appendChild(linkEl);
               
@@ -920,8 +930,11 @@
                     render(); apply(); syncUrl();
                   }));
                 });
-                // если у этой версии тегов нет — прячем только сам ряд тегов
-                tagEl.hidden = (map.size === 0);
+                // Ряд тегов по умолчанию спрятан: на главной нужен просто список статей.
+                // Показываем его, только если фильтр по тегу реально включён — например,
+                // пришли по ссылке ?tag=… из статьи. Тогда видно, что список отфильтрован,
+                // и есть чем это сбросить.
+                tagEl.hidden = (map.size === 0) || (activeTag === null);
               }
 
               function apply() {
@@ -1066,15 +1079,6 @@
       </section>
     </div>
 
-    <footer id="footer" class="bg-light  fixed-bottom  -row  text-secondary  border-top  py-1 py-md-2 py-lg-2">
-      <p class="px-5  my-0 my-lg-0  text-center  text-truncate">
-        <span class="d-none d-sm-inline">Copyright</span>
-        &copy; {{ site.time | date: "%Y" }} ProtectoRTD. All rights reserved.
-      </p>
-      <p class="d-none d-md-block   px-5   my-0 my-lg-0   text-center  text-truncate   print--hidden">
-        <small id="footer--project-description"><img class="footer--avatar" src="/assets/img/favicon.png" alt="" />{{ site.github.project_tagline }}</small>
-      </p>
-    </footer>
 
     <div class="print--hidden   fixed-bottom  text-right  px-1  ml-auto  small  text-black-50   d-none d-lg-block" style="width: fit-content;">
       <script>
