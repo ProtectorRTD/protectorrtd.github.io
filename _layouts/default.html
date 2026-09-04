@@ -279,51 +279,82 @@
         -font-family: 'M PLUS 1p', sans-serif;
       }
 
-      /* Панель справа вверху: название сайта + фильтры (на главной)
-         или дата, теги и кнопка PDF (в статье). */
-      .footer--avatar {
-        height: 1.5em;
-        width: 1.5em;
-        border-radius: 50%;
-        object-fit: cover;
-        vertical-align: -0.4em;
-        margin-right: 0.4em;
+      /* Горизонтальная панель вверху: аватар + название слева,
+         фильтры (на главной) или дата/теги/PDF (в статье) справа.
+         Содержимое центрируется в контейнере фиксированной ширины. */
+      #header {
+        border-bottom: 1px solid #e6e9ec;
       }
-
-      .header--panel {
-        display: inline-block;
-        max-width: 100%;
-        text-align: right;
-        padding: 0.4rem 0.75rem 0.5rem;
-        border: 1px solid #e1e5e8;
-        border-radius: 0.5rem;
-        background: rgba(255, 255, 255, 0.75);
-        box-shadow: 0 1px 3px rgba(73, 80, 87, 0.06);
+      #header-spacer {
+        min-height: 5rem;   /* страховка до срабатывания SyncHeaderSpacer() */
       }
-      .header--panel-title {
-        font-weight: 100;
-        font-size: 1.3rem;
-        line-height: 1.35;
-        letter-spacing: 0.01em;
-        margin-bottom: 0.3rem;
+      .header--bar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem 1.25rem;
+        max-width: 78rem;
+        margin: 0 auto;
+        padding: 0.6rem 1.5rem;
       }
-      .header--panel-title a,
-      .header--panel-title a:hover {
+      .header--brand {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        flex: none;
+        font-weight: 300;
+        font-size: 1.4rem;
+        line-height: 1.2;
         color: #6c757d;
         text-decoration: none;
+        white-space: nowrap;
       }
-      .header--panel-meta {
-        font-size: 0.72rem;
-        line-height: 1.9;
-        color: #868e96;
+      .header--brand:hover {
+        color: #495057;
+        text-decoration: none;
+      }
+      .header--avatar {
+        width: 2.1em;
+        height: 2.1em;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: none;
+      }
+      .header--controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.3rem 1rem;
+        margin-left: auto;
+        text-align: right;
+      }
+      .header--group {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.15rem;
+      }
+      .header--date {
+        font-size: 0.8rem;
+        color: #adb5bd;
+        white-space: nowrap;
+      }
+      .header--title {
+        max-width: 78rem;
+        margin: 0 auto 0.5rem;
+        padding: 0 1.5rem;
+        font-size: 1.7rem;
+        font-weight: 100;
+        text-align: center;
       }
       .header--pdf {
         display: inline-block;
-        margin-top: 0.15rem;
-        padding: 0 0.5em;
+        padding: 0 0.6em;
         border: 1px solid #ced4da;
         border-radius: 0.2rem;
-        font-size: 0.95em;
+        font-size: 0.8rem;
+        line-height: 1.8;
         color: #6c757d;
         text-decoration: none;
         white-space: nowrap;
@@ -400,43 +431,35 @@
         border-color: #adb5bd;
         text-decoration: none;
       }
-      #index-filters
-      {
-        margin: 0 0 1.75rem 0;
-      }
-      #index-filters .filter-row
-      {
-        display: block;
-        margin-bottom: 0.15rem;
-      }
-      #index-filters .filter-label
-      {
-        display: inline-block;
-        min-width: 4.4em;
-        font-size: 0.75em;
-        color: #adb5bd;
-        vertical-align: middle;
-      }
-      #index-filters .tag-badge
+      #lang-filter .tag-badge,
+      #tag-filter .tag-badge
       {
         cursor: pointer;
         user-select: none;
       }
-      #index-filters .tag-badge:hover
+      #lang-filter .tag-badge:hover,
+      #tag-filter .tag-badge:hover
       {
         border-color: #adb5bd;
       }
-      #index-filters .tag-badge.active
+      #lang-filter .tag-badge.active,
+      #tag-filter .tag-badge.active
       {
         background: #0366d6;
         color: #fff;
         border-color: #0366d6;
       }
+      #lang-filter
+      {
+        padding-right: 0.5rem;
+        border-right: 1px solid #e1e5e8;
+      }
       #lang-filter .tag-badge
       {
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        font-size: 0.68em;
+        font-size: 0.7rem;
+        padding: 0 0.7em;
       }
 
       section > *:first-child,
@@ -651,7 +674,7 @@
         #header { position: static !important; }
         #header-spacer { display: none !important; }
         #footer { position: static !important; }
-        .header--panel { display: none !important; }
+        .header--bar { display: none !important; }
         nav { display: none !important; }
 
         /* overflow:hidden на печати режет содержимое на границе страниц */
@@ -693,49 +716,34 @@
 
 
     <!-- spacer - keep same height with header + spacer in header -->
-    <div id="header-spacer" class="pt-2 pt-sm-3 pt-md-4 pt-lg-5  pb-3 pb-md-4 pb-lg-5  mb-1">
-      <h1 class="my-2">&nbsp;</h1>
-      <p class="my-1">&nbsp;</p>
-    </div>
+    <div id="header-spacer"><!-- высоту выставляет SyncHeaderSpacer(); min-height — страховка, если JS не сработал --></div>
     <!-- header -->
-    <header id="header" class="pt-2 pt-sm-3 pt-md-4 pt-lg-5  pb-3 pb-md-4 pb-lg-5  mb-1     fixed-top  row  no-gutters   bg-light">
-      <!-- spacer same with toc -->
-      <div class="col-0 col-sm-0 col-md-1 col-lg-2"></div>
-      <div class="col-10 col-sm-10 col-md-9 col-lg-8   px-5 px-md-3 px-lg-4   -border">
-        {% comment %} На главной заголовок страницы совпадает с названием сайта — не дублируем, он есть в панели. {% endcomment %}
-        {% if page.url != '/' %}
-          <h1 class="my-2   text-secondary  text-truncate   text-center">
-            {{ page.title | default: site.title }}
-          </h1>
-        {% endif %}
-        <div class="text-right">
-          <div class="header--panel">
-            <div class="header--panel-title">
-              <a href="{{ site.github.url }}/">{{ site.title }}</a>
-            </div>
-            {% if page.url == '/' %}
-              <div id="index-filters">
-                <div class="filter-row"><span class="filter-label">версия:</span><span id="lang-filter"></span></div>
-                <div class="filter-row"><span class="filter-label">теги:</span><span id="tag-filter"></span></div>
-              </div>
-            {% else %}
-              <div class="header--panel-meta">
-                {% if page.date %}
-                  <div><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time></div>
-                {% endif %}
-                {% if page.tags and page.tags.size > 0 %}
-                  {% assign tag_lang = page.lang | default: site.lang | split: "-" | first %}
-                  {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
-                  <div>{% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}</div>
-                {% endif %}
-                <div class="print--d-none">
-                  <a class="header--pdf" href="#" onclick="window.print(); return false;" title="Открыть диалог печати и выбрать «Сохранить как PDF»"><i class="fas fa-file-pdf  mr-1"></i>Скачать PDF</a>
-                </div>
-              </div>
+    <header id="header" class="fixed-top   bg-light">
+      <div class="header--bar">
+        <a class="header--brand" href="{{ site.github.url }}/">
+          <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
+          <span>{{ site.title }}</span>
+        </a>
+        <div class="header--controls">
+          {% if page.url == '/' %}
+            <span id="lang-filter" class="header--group"></span>
+            <span id="tag-filter" class="header--group"></span>
+          {% else %}
+            {% if page.date %}
+              <time class="header--date" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
             {% endif %}
-          </div>
+            {% if page.tags and page.tags.size > 0 %}
+              {% assign tag_lang = page.lang | default: site.lang | split: "-" | first %}
+              {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
+              <span class="header--group">{% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}</span>
+            {% endif %}
+            <a class="header--pdf  print--d-none" href="#" onclick="window.print(); return false;" title="Открыть диалог печати и выбрать «Сохранить как PDF»"><i class="fas fa-file-pdf  mr-1"></i>PDF</a>
+          {% endif %}
         </div>
       </div>
+      {% if page.url != '/' %}
+        <h1 class="header--title  text-secondary  text-truncate">{{ page.title | default: site.title }}</h1>
+      {% endif %}
     </header>
 
 
@@ -819,7 +827,7 @@
               linkEl.dataset.lang = langLabel;
               linkEl.dataset.tags = tagList.join('|').toLowerCase();
               let tagHtml = tagList.map(t => '<span class="tag-badge">' + t + '</span>').join('');
-              linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>&nbsp;   <small class="lang-badge">'+langLabel+'</small>   <small class="text-black-50">'+date+'</small>'
+              linkEl.innerHTML = '<a href="'+url+'">' + title + '</a>   <small class="text-black-50">'+date+'</small>'
                                + (tagHtml ? '<br />' + tagHtml : '')
                                + '<br /><small>' + snippet + '</small>';
               dirEl.appendChild(linkEl);
@@ -857,14 +865,15 @@
             // Два независимых фильтра: сначала версия (orig / eng), затем теги этой версии.
             // Теги языков не смешиваются. Всё на стороне браузера, без плагинов.
             (function () {
-              let rootEl = document.querySelector('#index-filters');
               let langEl = document.querySelector('#lang-filter');
               let tagEl  = document.querySelector('#tag-filter');
-              if (!rootEl || !langEl || !tagEl) return;
+              if (!langEl || !tagEl) return;
 
               const LANG_ORDER = ['orig', 'eng'];
               let langs = LANG_ORDER.filter(l => TAGS_BY_LANG[l]);
-              let activeLang = null;
+              // Версия выбрана всегда — «все» нет специально: тогда теги
+              // в панели гарантированно относятся к показанному языку.
+              let activeLang = langs[0] ?? null;
               let activeTag = null;   // всегда в нижнем регистре
 
               // теги только выбранной версии; если версия не выбрана — объединение
@@ -893,11 +902,9 @@
 
               function render() {
                 langEl.innerHTML = '';
-                langEl.appendChild(chip('все', activeLang === null, () => {
-                  activeLang = null; activeTag = null; render(); apply(); syncUrl();
-                }));
                 langs.forEach(l => langEl.appendChild(chip(l, activeLang === l, () => {
-                  activeLang = (activeLang === l) ? null : l;
+                  if (activeLang === l) return;      // повторный клик ничего не меняет
+                  activeLang = l;
                   if (activeTag && !tagMap().has(activeTag)) activeTag = null;
                   render(); apply(); syncUrl();
                 })));
@@ -913,8 +920,8 @@
                     render(); apply(); syncUrl();
                   }));
                 });
-                // строку тегов не показываем, если тегов нет вовсе
-                tagEl.parentElement.hidden = (map.size === 0);
+                // если у этой версии тегов нет — прячем только сам ряд тегов
+                tagEl.hidden = (map.size === 0);
               }
 
               function apply() {
@@ -936,6 +943,7 @@
               let q = new URLSearchParams(location.search);
               let wantLang = (q.get('lang') || '').toLowerCase();
               if (langs.includes(wantLang)) activeLang = wantLang;
+              if (!activeLang) activeLang = langs[0] ?? null;
               let wantTag = (q.get('tag') || '').toLowerCase();
               if (wantTag && tagMap().has(wantTag)) activeTag = wantTag;
 

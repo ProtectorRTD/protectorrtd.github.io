@@ -1,5 +1,5 @@
 ---
-title: "Sample article in English"
+title: "Sample article"
 date: 2026-09-03
 description: "."
 tags: [sample, notes]
