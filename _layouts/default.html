@@ -88,18 +88,9 @@
           topMostHeaderTag = 'h' + i;
           break;
         }
-        // insert first heading if not exists
-        // на главной не нужно: там список, а не текст, и заголовок уже есть в шапке
-        let sectionFirstEl = document.querySelector('#page-links') ? null : document.querySelector('section')?.children[0];
-        if (0 > sectionFirstEl?.tagName.search(/[hH][1-6]/) && !sectionFirstEl?.querySelector('h1, h2, h3, h4, h5, h6')) {
-          let topAnchorEl = document.createElement(topMostHeaderTag);
-          topAnchorEl.innerText = document.querySelector('header h1').innerText;
-          document.querySelector('section').insertBefore(topAnchorEl, document.querySelector('section').children[0]);
-          // hide first heading if img next to.
-          if (0 <= sectionFirstEl?.tagName.search(/img/i) || sectionFirstEl?.querySelector('img')) {
-            topAnchorEl.classList.add('d-none');
-          }
-        }
+        // Заголовок статьи теперь всегда есть в разметке (.article--title),
+        // поэтому подставлять его скриптом больше не нужно — раньше это давало
+        // второй такой же заголовок на странице.
         // GitHub Flavored Markdown Spec - https://github.github.com/gfm/#ascii-punctuation-character
         const gfmPunctuationAscii = /[\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]/g;  // don't remove -'s
         const gfmPunctuationUnicode = /[\p{Connector_Punctuation}\p{Dash_Punctuation}\p{Close_Punctuation}\p{Final_Punctuation}\p{Initial_Punctuation}\p{Other_Punctuation}\p{Open_Punctuation}]/gu;
@@ -374,14 +365,63 @@
         color: #adb5bd;
         white-space: nowrap;
       }
-      .header--title {
-        max-width: 78rem;
-        margin: 0 auto 0.5rem;
-        padding: 0 1.5rem;
-        font-size: 1.7rem;
+      .article--title {
+        margin: 0 0 1.5rem;
         font-weight: 100;
+      }
+      /* --- графики ------------------------------------------------------ */
+      figure.chart {
+        margin: 2rem 0;
+      }
+      figure.chart figcaption {
+        margin-bottom: 0.7rem;
+        font-size: 0.95rem;
+        color: #52514e;
+      }
+      .chart-box {
+        position: relative;
+        width: 100%;
+      }
+      .chart-data {
+        margin-top: 0.8rem;
+        font-size: 0.78rem;
+        color: #52514e;
+      }
+      .chart-data summary {
+        cursor: pointer;
+        color: #898781;
+      }
+      .chart-data table {
+        margin-top: 0.6rem;
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+      }
+      .chart-data th,
+      .chart-data td {
+        padding: 0.25rem 0.9rem 0.25rem 0;
+        border-bottom: 1px solid #e1e0d9;
+        text-align: right;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+      .chart-data thead th,
+      .chart-data tbody th {
+        text-align: left;
+        color: #898781;
+      }
+      .chart-error {
+        margin: 2rem 0;
+        padding: 0.6rem 0.9rem;
+        border-left: 3px solid #d03b3b;
+        background: #faf0f0;
+        font-size: 0.85rem;
+        color: #52514e;
+      }
+      pre.mermaid {
+        background: none;
         text-align: center;
       }
+
       .header--pdf {
         display: inline-block;
         padding: 0 0.6em;
@@ -710,6 +750,8 @@
         #header-spacer { display: none !important; }
         #footer { position: static !important; }
         .header--bar { display: none !important; }
+        .chart-data { display: none !important; }
+        figure.chart { break-inside: avoid; }
         nav { display: none !important; }
 
         /* overflow:hidden на печати режет содержимое на границе страниц */
@@ -776,9 +818,6 @@
           {% endif %}
         </div>
       </div>
-      {% if page.url != '/' %}
-        <h1 class="header--title  text-secondary  text-truncate">{{ page.title | default: site.title }}</h1>
-      {% endif %}
     </header>
 
 
@@ -1069,6 +1108,9 @@
           <h5>H5 : Nav-Scrollbar &lt; Test! | [ END ]</h5>
         {% endif %}
 
+        {% if page.url != '/' %}
+          <h1 class="article--title">{{ page.title | default: site.title }}</h1>
+        {% endif %}
         {{ content }}
         <!-- spacer for screen -->
         <div class="print--d-none  vh-100"></div>
@@ -1177,6 +1219,10 @@
     </script>
 
     <script src="{{ '/assets/js/scale.fix.js' | relative_url }}"></script>
+
+    <!-- Графики и диаграммы: блоки ```chart и ```mermaid в статьях.
+         Chart.js и mermaid подтягиваются с CDN только там, где такой блок есть. -->
+    <script src="{{ '/assets/js/charts.js' | relative_url }}" defer></script>
 
   </body>
 </html>
