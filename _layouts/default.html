@@ -429,22 +429,6 @@
         text-align: center;
       }
 
-      .header--pdf {
-        display: inline-block;
-        padding: 0 0.6em;
-        border: 1px solid #ced4da;
-        border-radius: 0.2rem;
-        font-size: 0.8rem;
-        line-height: 1.8;
-        color: #6c757d;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-      .header--pdf:hover {
-        color: #0366d6;
-        border-color: #0366d6;
-        text-decoration: none;
-      }
 
       .header--lang  a {
         -text-decoration: none;
@@ -459,9 +443,7 @@
         ---white-space: nowrap;
         ---text-overflow: ellipsis;
       }
-      nav ul li.font-large,
-      #printing-button a
-      {
+      nav ul li.font-large {
         font-size: 1.1em;
       }
       nav ul li.font-small {
@@ -821,7 +803,6 @@
               {% if tag_lang == "en" %}{% assign tag_lang = "eng" %}{% else %}{% assign tag_lang = "orig" %}{% endif %}
               <span class="header--group">{% for tag in page.tags %}<a class="tag-badge" href="{{ site.github.url }}/?lang={{ tag_lang }}&amp;tag={{ tag | downcase | uri_escape }}">{{ tag }}</a>{% endfor %}</span>
             {% endif %}
-            <a class="header--pdf  print--d-none" href="#" onclick="window.print(); return false;" title="Открыть диалог печати и выбрать «Сохранить как PDF»"><i class="fas fa-file-pdf  mr-1"></i>PDF</a>
           {% endif %}
         </div>
       </div>
@@ -836,16 +817,6 @@
       <div class="col-0 col-sm-0 col-md-1 col-lg-3"></div>
       <nav class="d-none d-lg-block  col-3   -my-5   pl-2 pr-3  py-1  text-right  position-fixed  print--hidden">
         <ul></ul><!-- placeholder for table of contents -->
-        <div id="printing-button">
-          <script>
-            // show printing button if ready to print
-            document.addEventListener('DOMContentLoaded', (event) => {
-              if ($("section .print--page-break").length > 0) {
-                $("#printing-button").html('<small>Ready for</small> &#128424; <a href="javascript: window.print();" style="text-decoration: none;">A4 Print</a>');
-              }
-            });
-          </script>
-        </div>
         <small>
           Go to <a href="{{ site.github.url }}/">Index</a>
         </small>
