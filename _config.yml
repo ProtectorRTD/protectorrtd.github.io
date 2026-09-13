@@ -1,5 +1,5 @@
 # --- Site ---------------------------------------------------------------
-title: "ProtectoRTD"
+title: "ProtectorRTD"
 description: "Статьи и заметки / Articles and notes"
 url: "https://protectorrtd.github.io"
 baseurl: ""
@@ -43,7 +43,7 @@ defaults:
     values:
       layout: "default"
       author:
-        - "ProtectoRTD"
+        - "ProtectorRTD"
   - scope:
       path: "articles/ru"
     values:
