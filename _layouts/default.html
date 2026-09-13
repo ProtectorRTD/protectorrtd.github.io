@@ -767,18 +767,6 @@
     <div id="background-fill" class="vw-100 vh-100  bg-light   position-fixed" style="top: 0px; left: 0px; z-index: -2022;"></div>
 
 
-    {% comment %} Logo in the top-right corner. Rendered only when logo_src is set in _config.yml. {% endcomment %}
-    {% assign logo_src = page.logo_src | default: site.logo_src %}
-    {% if logo_src != blank %}
-      {% assign logo_background = page.logo_background | default: site.logo_background | default: "#00cce4" %}
-      <div class="col-2 col-sm-2 col-md-2 col-lg-2   pl-0 pl-sm-0 pl-md-0   fixed-top   ml-auto"  style="z-index: 9999;">
-        <a target="_blank" href='{{ page.logo_href | default: site.logo_href | default: site.github.owner_url }}'>
-          <div class="pt-3 pt-md-4  px-0  pb-2 pb-md-3   ml-0 ml-md-2 ml-lg-2" style='width: fit-content; border-radius: 0px 0px 5% 5%; overflow: hidden; background: {{ logo_background }};'>
-            <img style='width: 12.5vw; max-width: 7rem;' src='{{ logo_src }}' />
-          </div>
-        </a>
-      </div>
-    {% endif %}
 
 
     <!-- spacer - keep same height with header + spacer in header -->
@@ -1113,18 +1101,6 @@
     </div>
 
 
-    <div class="print--hidden   fixed-bottom  text-right  px-1  ml-auto  small  text-black-50   d-none d-lg-block" style="width: fit-content;">
-      <script>
-        let res = {"Mobile":[576,800],"Tablet":[768,960],"PC":[1200,1200],"A4 Print":[905,1280]};//[678,960][905,1280],"4x3":[1600,1200],"16x9":[1920,1080]
-        for(let key in res) {
-          document.write("<a href=\"javascript: url=new URL(location); url.search='?m=" + key.replace(/ /g, '-').toLowerCase() + "'; window.open(url,'_blank','innerWidth="+res[key][0]+",innerHeight="+res[key][1]+",left="+Math.floor((screen.width-res[key][0])*0.5)+"')\">"+key+"</a>");
-          if(key != Object.keys(res)[Object.keys(res).length-1]) document.write(' | ');
-        };
-      </script>
-      <!--
-      <a href='javascript:$("body").css("overflow",$("body").css("overflow")!="hidden"?"hidden":"unset")'>Scrollbar</a>
-      -->
-    </div>
 
     <!-- scale page 75% for print preview (72dpi to 96dpi, screen to css dpi for print) -->
     <script>
