@@ -27,6 +27,7 @@
   var GRID       = '#e1e0d9';   // линии сетки
   var AXIS       = '#c3c2b7';   // ось и базовая линия
   var SURFACE    = '#ffffff';   // фон, на котором рисуем
+  var CRITICAL   = '#d03b3b';   // вертикальные пометки о событии (не серия!)
 
   function hexToRgba(hex, a) {
     var n = parseInt(hex.slice(1), 16);
@@ -65,6 +66,41 @@
     el.className = 'chart-error';
     el.textContent = 'График не построен: ' + message;
     host.replaceWith(el);
+  }
+
+  // Вертикальная пометка на графике: линия плюс подпись.
+  // Нужна там, где сам по себе излом линии читается неправильно, например
+  // «здесь под умер, метрика перестала приходить, а не память стабилизировалась».
+  function markerPlugin(markers, labels) {
+    return {
+      id: 'vmarkers',
+      afterDatasetsDraw: function (chart) {
+        var ctx = chart.ctx, area = chart.chartArea, xs = chart.scales.x;
+        markers.forEach(function (m) {
+          var idx = (typeof m.at === 'number') ? m.at : labels.indexOf(m.at);
+          if (idx < 0) return;
+          var x = xs.getPixelForValue(idx);
+          ctx.save();
+          ctx.strokeStyle = CRITICAL;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x, area.top);
+          ctx.lineTo(x, area.bottom);
+          ctx.stroke();
+          if (m.text) {
+            ctx.font = '600 11px ' + window.Chart.defaults.font.family;
+            ctx.fillStyle = CRITICAL;
+            ctx.textBaseline = 'bottom';
+            var w = ctx.measureText(m.text).width;
+            // подпись слева от линии, если справа не помещается
+            var right = (x + 6 + w) <= area.right;
+            ctx.textAlign = right ? 'left' : 'right';
+            ctx.fillText(m.text, right ? x + 6 : x - 6, area.top - 6);
+          }
+          ctx.restore();
+        });
+      }
+    };
   }
 
   // --- построение конфигурации Chart.js ------------------------------------
@@ -118,12 +154,15 @@
 
     return {
       type: type,
+      plugins: (spec.markers && spec.markers.length)
+        ? [markerPlugin(spec.markers, spec.labels || [])]
+        : [],
       data: { labels: spec.labels || [], datasets: datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
-        layout: { padding: { top: 4, right: 8, bottom: 0, left: 0 } },
+        layout: { padding: { top: (spec.markers && spec.markers.length) ? 24 : 4, right: 8, bottom: 0, left: 0 } },
         plugins: {
           // Заголовок рисуем сами, в <figcaption> — он должен читаться и без JS.
           title: { display: false },
@@ -171,7 +210,14 @@
           },
           y: {
             stacked: stacked,
-            beginAtZero: type === 'bar',
+            // По умолчанию ось от нуля: обрезанная ось у линии зрительно
+            // раздувает колебания. "zero": false, если нужно иначе.
+            beginAtZero: spec.zero !== false,
+            // "max"/"min" нужны, когда два графика стоят рядом как «до и после»:
+            // без общего масштаба второй автоматически растянется, и мелкие
+            // колебания будут выглядеть таким же скачком, как настоящий.
+            max: spec.max,
+            min: spec.min,
             grid: { color: GRID, drawTicks: false },
             border: { display: false, dash: undefined },
             ticks: {
