@@ -13,16 +13,16 @@ Coming in for another shift at the office factory and opening the laptop, the fi
 * Agroal (connection pool, and it matters that this sits at the Java app instance level)
 * Databases: Databricks, MSSQL, Oracle
 
-So, in the logs, while finding the record of a new app instance being created, I also find the exact moment the instance dies. No OOM and no exceptions in the logs. Going in through container management, we find error 137 (the container ran out of memory and decided to kill the app).
+So, in the logs, while finding the record of a new app instance being created, I also find the exact moment the instance dies. No OOM and no exceptions in the logs. Going in through container management, we find error **137** (the container ran out of memory and decided to kill the app).
 
 You would think, how is that even possible? If the app had run out of memory, we would have had a nice OOM message from Java. Naturally we checked the settings (is there a case where container memory is smaller than JVM memory), made sure that was not so and that the container adjusts based on JVM memory numbers.
 
 We went to look at the JVM memory metrics. We see that there is indeed a spike right before the instance dies, but it still does not reach the ceiling (another 30 percent left in reserve). Smart readers will say that is logical: the metrics push could have missed its slot, and the next time window simply never got sent. But even taking a linear function, there was still room. And that again does not answer the question of why Java did not send an OOM (for non Java people, a reminder: the JVM reserves memory for the OOM error and its log right at the start, so it will always manage to write the error before going down).
 
-The only steady growth we see is G1 Old Gen. I will not go into a detailed walkthrough of how GC generations work. In Java terms, for our investigation, this only tells us a few things:
+The only steady growth we see is **G1 Old Gen**. I will not go into a detailed walkthrough of how GC generations work. In Java terms, for our investigation, this only tells us a few things:
 
 * large objects go straight into Old Gen;
-* many objects are not collected and get promoted into Old Gen (potentially the first hint, something may be holding a strong reference in the app);
+* many objects are not collected and get promoted into Old Gen (potentially the first hint, something may be holding a **strong reference** in the app);
 * every GC round over the last 2 minutes did not actually reduce the amount of memory, it just moved objects from Young Gen into Old Gen.
 
 ```chart
@@ -95,7 +95,7 @@ The only steady growth we see is G1 Old Gen. I will not go into a detailed walkt
 }
 ```
 
-Having analysed the rest of the memory related metrics, we come to the conclusion that there is no more useful information. At that moment it becomes clear that there is most likely some resource leak in the app, and that we really ought to take a heap dump and look at it, maybe it gives us something. But here we had two problems:
+Having analysed the rest of the memory related metrics, we come to the conclusion that there is no more useful information. At that moment it becomes clear that there is most likely some resource leak in the app, and that we really ought to take a **heap dump** and look at it, maybe it gives us something. But here we had two problems:
 
 * a heap dump is generated, with the right settings, in the case of an OOM (not our case);
 * a heap dump is generated from the command line, which means it is the current state of the system, and if this was an exceptional situation, the dump goes nowhere useful.
@@ -248,11 +248,11 @@ The numbers hold for 30 minutes, until the SMB sessions close.
 
 ## The culprit
 
-A thread is native memory. Every Java thread gets its own stack (1 MB by default, `-Xss`) plus the native structures of the thread itself. Native memory is not in the heap, which is why heap metrics and the heap dump are clean.
+A thread is **native memory**. Every Java thread gets its own stack (1 MB by default, `-Xss`) plus the native structures of the thread itself. Native memory is not in the heap, which is why heap metrics and the heap dump are clean.
 
-Threads are fully counted in the process RSS, and therefore in the container memory limit. If the container has, say, 1 GB and `MaxRAMPercentage=75`, then everything native is left with roughly 250 MB, which the threads ate entirely.
+Threads are fully counted in the process **RSS**, and therefore in the container memory limit. If the container has, say, 1 GB and `MaxRAMPercentage=75`, then everything native is left with roughly 250 MB, which the threads ate entirely.
 
-What happens next has nothing to do with the container itself. The memory limit is a cgroup, and when the memory of the processes inside it hits the ceiling and nothing can be reclaimed, the kernel OOM killer picks a victim and sends it `SIGKILL`. We have a single JVM in that cgroup, so the choice is obvious.
+What happens next has nothing to do with the container itself. The memory limit is a **cgroup**, and when the memory of the processes inside it hits the ceiling and nothing can be reclaimed, the kernel **OOM killer** picks a victim and sends it `SIGKILL`. We have a single JVM in that cgroup, so the choice is obvious.
 
 And there was no OOM from Java because the JVM never hit its heap ceiling at all. It was killed from the outside, not from the inside.
 
