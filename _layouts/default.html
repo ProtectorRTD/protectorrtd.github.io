@@ -119,7 +119,12 @@
           // encoded string causes error. always decode.
           let targetEl = $(decodeURIComponent($(this).attr("href")));
           if (!targetEl) return;
-          var position = $(targetEl).offset().top - document.querySelector("#header").getBoundingClientRect().height;
+          // Отступ под шапку нужен, только пока она фиксирована. На телефоне
+          // она обычная и уезжает вместе с текстом, вычитать её высоту нельзя.
+          let headerEl = document.querySelector("#header");
+          let headerOffset = (headerEl && getComputedStyle(headerEl).position === 'fixed')
+            ? headerEl.getBoundingClientRect().height : 0;
+          var position = $(targetEl).offset().top - headerOffset;
           $("html").animate({scrollTop: position + 'px'}, 400);
           $("nav ul li a").parent().removeClass("active");
           $(this).parent().addClass("active");
@@ -347,8 +352,19 @@
         text-align: right;
       }
 
-      /* На узком экране в одну строку это не влезает — складываем колонкой. */
+      /* На узком экране в одну строку это не влезает, складываем колонкой.
+         Порог в rem внутри media query считается от 16px, то есть это ~736px,
+         а не от увеличенного шрифта страницы. */
       @media (max-width: 46rem) {
+        /* И заодно шапка перестаёт липнуть: сложенная в столбик, она забирала
+           бы у телефона половину экрана на всё время чтения. Распорка под ней
+           при этом не нужна, иначе останется дыра. */
+        #header.fixed-top {
+          position: static !important;
+        }
+        #header-spacer {
+          display: none !important;
+        }
         .header--bar {
           grid-template-columns: 1fr;
           justify-items: center;
