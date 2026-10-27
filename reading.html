@@ -11,7 +11,6 @@ listed: false
 
 <h2><span class="i18n-ru">Пейперы</span><span class="i18n-en">Papers</span></h2>
 
-<h3><span class="i18n-ru">Хочу прочитать</span><span class="i18n-en">Want to read</span></h3>
 {% assign prio_keys = "now,soon,later" | split: "," %}
 {% assign prio_ru = "сейчас,следующие,потом" | split: "," %}
 {% assign prio_en = "now,next,later" | split: "," %}
@@ -42,7 +41,6 @@ listed: false
 
 <h2><span class="i18n-ru">Книги</span><span class="i18n-en">Books</span></h2>
 
-<h3><span class="i18n-ru">Хочу прочитать</span><span class="i18n-en">Want to read</span></h3>
 <div class="papers--tiers papers--prio books--tiers">
   {% for key in prio_keys %}
   {% assign items = books.want | where: "priority", key %}

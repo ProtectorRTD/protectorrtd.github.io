@@ -17,6 +17,7 @@ want:
     year: 2026
     url: "https://www.oreilly.com/library/view/designing-data-intensive/9781098119058/"
     isbn: "9781098119065"
+    cover: "https://www.oreilly.com/covers/urn:orm:book:9781098119058/296w/?format=webp"
     priority: soon
 
   - title: "Use The Index, Luke! (SQL Performance Explained)"
