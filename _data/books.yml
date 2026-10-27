@@ -19,4 +19,11 @@ want:
     isbn: "9781098119065"
     priority: soon
 
+  - title: "Use The Index, Luke! (SQL Performance Explained)"
+    authors: "Markus Winand"
+    year: 2012
+    url: "https://use-the-index-luke.com/"
+    isbn: "9783950307825"
+    priority: later
+
 read: []
