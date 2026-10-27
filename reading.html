@@ -41,29 +41,28 @@ listed: false
 </div>
 
 <h2><span class="i18n-ru">Книги</span><span class="i18n-en">Books</span></h2>
+
+<h3><span class="i18n-ru">Хочу прочитать</span><span class="i18n-en">Want to read</span></h3>
+<div class="papers--tiers papers--prio books--tiers">
+  {% for key in prio_keys %}
+  {% assign items = books.want | where: "priority", key %}
+  <div class="papers--tier">
+    <div class="papers--tier-label prio-{{ key }}"><span class="i18n-ru">{{ prio_ru[forloop.index0] }}</span><span class="i18n-en">{{ prio_en[forloop.index0] }}</span></div>
+    <div class="books--items">
+      {% for b in items %}{% include book-card.html b=b %}{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<h3><span class="i18n-ru">Прочитано</span><span class="i18n-en">Read</span></h3>
 <div class="papers--tiers books--tiers">
   {% for t in tiers %}
   {% assign items = books.read | where: "tier", t | sort: "date", "first" | reverse %}
   <div class="papers--tier">
     <div class="papers--tier-label tier-{{ t | downcase }}">{{ t }}</div>
     <div class="books--items">
-      {% for b in items %}
-        {% if b.cover %}{% assign cover = b.cover | relative_url %}
-        {% elsif b.isbn %}{% capture cover %}https://covers.openlibrary.org/b/isbn/{{ b.isbn }}-M.jpg?default=false{% endcapture %}
-        {% else %}{% assign cover = nil %}{% endif %}
-        {% capture tip %}{{ b.title }}{% if b.authors %} — {{ b.authors }}{% endif %}{% if b.year %}, {{ b.year }}{% endif %}{% endcapture %}
-        {% if b.url %}<a class="book" href="{{ b.url }}" title="{{ tip | strip | escape }}">{% else %}<div class="book" title="{{ tip | strip | escape }}">{% endif %}
-          {% if cover %}
-            <img class="book--cover" src="{{ cover }}" alt="{{ b.title | escape }}" loading="lazy"
-                 onerror="this.hidden=true; this.nextElementSibling.hidden=false;" />
-            <div class="book--cover book--placeholder" hidden>{{ b.title }}</div>
-          {% else %}
-            <div class="book--cover book--placeholder">{{ b.title }}</div>
-          {% endif %}
-          <div class="book--title">{{ b.title }}</div>
-          {% if b.date %}<div class="book--date">{% include read-date.html d=b.date %}</div>{% endif %}
-        {% if b.url %}</a>{% else %}</div>{% endif %}
-      {% endfor %}
+      {% for b in items %}{% include book-card.html b=b %}{% endfor %}
     </div>
   </div>
   {% endfor %}

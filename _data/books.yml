@@ -1,12 +1,22 @@
-# Тир-лист прочитанных книг на странице /reading/.
+# Книги на странице /reading/.
 #
-# title, authors, year, url, tier (S, A, B, C, D, E), date (месяц прочтения в кавычках, "ГГГГ-ММ", по желанию)
+# want — хочу прочитать: title, authors, year, url + priority: now (сейчас), soon (следующие), later (потом)
+# read — прочитано: то же самое + tier (S, A, B, C, D, E) и date — месяц прочтения в кавычках, "ГГГГ-ММ"
 # Обложка: isbn — подтягивается из Open Library; cover — своя картинка (путь или URL), важнее isbn.
 
-read:
+want:
   - title: "Site Reliability Engineering: How Google Runs Production Systems"
     authors: "Betsy Beyer, Chris Jones, Jennifer Petoff, Niall Richard Murphy"
     year: 2016
     url: "https://sre.google/sre-book/table-of-contents/"
     isbn: "9781491929124"
-    tier: S
+    priority: now
+
+  - title: "Designing Data-Intensive Applications, 2nd Edition"
+    authors: "Martin Kleppmann, Chris Riccomini"
+    year: 2026
+    url: "https://www.oreilly.com/library/view/designing-data-intensive/9781098119058/"
+    isbn: "9781098119065"
+    priority: soon
+
+read: []

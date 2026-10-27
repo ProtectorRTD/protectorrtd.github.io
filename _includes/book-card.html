@@ -1,0 +1,16 @@
+{%- assign b = include.b -%}
+{%- if b.cover -%}{%- assign cover = b.cover | relative_url -%}
+{%- elsif b.isbn -%}{%- capture cover -%}https://covers.openlibrary.org/b/isbn/{{ b.isbn }}-M.jpg?default=false{%- endcapture -%}
+{%- else -%}{%- assign cover = nil -%}{%- endif -%}
+{%- capture tip -%}{{ b.title }}{% if b.authors %} — {{ b.authors }}{% endif %}{% if b.year %}, {{ b.year }}{% endif %}{%- endcapture -%}
+{% if b.url %}<a class="book" href="{{ b.url }}" title="{{ tip | escape }}">{% else %}<div class="book" title="{{ tip | escape }}">{% endif %}
+  {% if cover %}
+    <img class="book--cover" src="{{ cover }}" alt="{{ b.title | escape }}" loading="lazy"
+         onerror="this.hidden=true; this.nextElementSibling.hidden=false;" />
+    <div class="book--cover book--placeholder" hidden>{{ b.title }}</div>
+  {% else %}
+    <div class="book--cover book--placeholder">{{ b.title }}</div>
+  {% endif %}
+  <div class="book--title">{{ b.title }}</div>
+  {% if b.date %}<div class="book--date">{% include read-date.html d=b.date %}</div>{% endif %}
+{% if b.url %}</a>{% else %}</div>{% endif %}
