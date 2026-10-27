@@ -1,19 +1,14 @@
-# Списки пейперов для страницы /papers/.
+# Пейперы на странице /reading/.
 #
 # want — хочу прочитать: title, authors, year, url, note (всё кроме title — по желанию)
-#        + priority: now (сейчас), soon (скоро), later (потом)
+#        + priority: now (сейчас), soon (следующие), later (потом)
 # read — прочитано: то же самое + tier (S, A, B, C, D, E) и date (ГГГГ-ММ-ДД, по желанию)
 
 want:
-  - title: "JSR-133: Java Memory Model and Thread Specification"
-    authors: "JSR-133 Expert Group (William Pugh et al.)"
-    year: 2004
-    priority: soon
-
-  - title: "Futexes Are Tricky"
-    authors: "Ulrich Drepper"
-    year: 2004
-    priority: soon
+  - title: "The Java Memory Model"
+    authors: "Jeremy Manson, William Pugh, Sarita V. Adve"
+    year: 2005
+    priority: now
 
   - title: "Monarch: Google's Planet-Scale In-Memory Time Series Database"
     authors: "Colin Adams, Luis Alonso et al."
@@ -29,6 +24,11 @@ want:
     authors: "Abhishek Verma, Luis Pedrosa, Madhukar Korupolu, David Oppenheimer, Eric Tune, John Wilkes"
     year: 2015
     priority: soon
+
+  - title: "Futexes Are Tricky"
+    authors: "Ulrich Drepper"
+    year: 2004
+    priority: later
 
 read:
   - title: "Impossibility of Distributed Consensus with One Faulty Process"

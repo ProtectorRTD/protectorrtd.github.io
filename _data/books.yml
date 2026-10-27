@@ -1,0 +1,12 @@
+# Тир-лист прочитанных книг на странице /reading/.
+#
+# title, authors, year, url, tier (S, A, B, C, D, E), date (ГГГГ-ММ-ДД, по желанию)
+# Обложка: isbn — подтягивается из Open Library; cover — своя картинка (путь или URL), важнее isbn.
+
+read:
+  - title: "Site Reliability Engineering: How Google Runs Production Systems"
+    authors: "Betsy Beyer, Chris Jones, Jennifer Petoff, Niall Richard Murphy"
+    year: 2016
+    url: "https://sre.google/sre-book/table-of-contents/"
+    isbn: "9781491929124"
+    tier: S

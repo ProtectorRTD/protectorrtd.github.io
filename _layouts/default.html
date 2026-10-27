@@ -492,6 +492,60 @@
         color: #adb5bd;
         white-space: nowrap;
       }
+      /* Книги: в ряду тира — обложки, как в обычном тир-листе */
+      .books--items {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        padding: 0.6rem 0.8rem;
+        background: #fff;
+      }
+      .book {
+        display: block;
+        width: 5.2rem;
+        color: #343a40;
+        text-decoration: none;
+      }
+      a.book:hover {
+        color: #0366d6;
+        text-decoration: none;
+      }
+      a.book:hover .book--cover {
+        box-shadow: 0 0 0 2px #0366d6;
+      }
+      .book--cover {
+        display: block;
+        width: 5.2rem;
+        height: 7.6rem;
+        object-fit: cover;
+        border-radius: 0.2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+        background: #e7eaec;
+      }
+      .book--placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem;
+        text-align: center;
+        font-size: 0.6rem;
+        line-height: 1.25;
+        color: #495057;
+        overflow: hidden;
+      }
+      .book--placeholder[hidden] {
+        display: none !important;
+      }
+      .book--title {
+        margin-top: 0.3rem;
+        font-size: 0.6rem;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
       /* --- графики ------------------------------------------------------ */
       figure.chart {
         margin: 2rem 0;
@@ -895,8 +949,8 @@
             <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
           </a>
           <span class="header--tabs">
-            <a class="header--tab{% if page.url != '/papers/' %} active{% endif %}" href="{{ site.github.url }}/">статьи</a>
-            <a class="header--tab{% if page.url == '/papers/' %} active{% endif %}" href="{{ site.github.url }}/papers/">papers</a>
+            <a class="header--tab{% if page.url != '/reading/' %} active{% endif %}" href="{{ site.github.url }}/">статьи</a>
+            <a class="header--tab{% if page.url == '/reading/' %} active{% endif %}" href="{{ site.github.url }}/reading/">чтение</a>
           </span>
         </div>
         <a class="header--brand" href="{{ site.github.url }}/">{{ site.title }}</a>
