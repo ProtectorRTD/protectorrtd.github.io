@@ -1,0 +1,10 @@
+# Списки пейперов для страницы /papers/.
+#
+# want — хочу прочитать: title, authors, year, url, note (всё кроме title — по желанию)
+# read — прочитано: то же самое + rating (из rating_max) и date (ГГГГ-ММ-ДД)
+
+rating_max: 10
+
+want: []
+
+read: []

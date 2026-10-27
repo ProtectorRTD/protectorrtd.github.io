@@ -311,12 +311,36 @@
         margin: 0 auto;
         padding: 0.6rem 1.5rem;
       }
-      /* колонка 1 — фотка */
-      .header--avatar-link {
+      /* колонка 1 — фотка и вкладки разделов */
+      .header--left {
         grid-column: 1;
         justify-self: start;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .header--avatar-link {
         display: inline-flex;
         line-height: 0;
+      }
+      .header--tabs {
+        display: inline-flex;
+        gap: 0.9rem;
+      }
+      .header--tab {
+        font-size: 0.85rem;
+        color: #6c757d;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        padding-bottom: 0.1rem;
+      }
+      .header--tab:hover {
+        color: #495057;
+        text-decoration: none;
+      }
+      .header--tab.active {
+        color: #495057;
+        border-bottom-color: #0366d6;
       }
       .header--avatar {
         width: 2.9rem;
@@ -369,7 +393,7 @@
           grid-template-columns: 1fr;
           justify-items: center;
         }
-        .header--avatar-link,
+        .header--left,
         .header--brand,
         .header--controls {
           grid-column: 1;
@@ -391,6 +415,64 @@
       .article--title {
         margin: 0 0 1.5rem;
         font-weight: 100;
+      }
+      /* --- страница papers ---------------------------------------------- */
+      .papers--want {
+        padding-left: 1.2rem;
+      }
+      .papers--want li {
+        margin-bottom: 0.9em;
+      }
+      .papers--meta {
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+      .papers--want .papers--meta::before {
+        content: " — ";
+      }
+      .papers--note {
+        font-size: 0.8rem;
+        color: #898781;
+        font-style: italic;
+      }
+      .papers--empty {
+        color: #adb5bd;
+      }
+      table.papers--read {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+      }
+      .papers--read th {
+        font-weight: 400;
+        font-size: 0.75rem;
+        color: #898781;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #c9ced3;
+        padding: 0.3rem 0.6rem 0.3rem 0;
+      }
+      .papers--read td {
+        vertical-align: top;
+        border-bottom: 1px solid #e1e0d9;
+        padding: 0.6rem 0.6rem 0.6rem 0;
+      }
+      .papers--num {
+        text-align: right;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .papers--read th:last-child,
+      .papers--read td:last-child {
+        padding-right: 0;
+      }
+      .papers--of {
+        color: #adb5bd;
+        font-size: 0.8em;
+      }
+      .papers--date {
+        font-size: 0.85rem;
+        color: #6c757d;
       }
       /* --- графики ------------------------------------------------------ */
       figure.chart {
@@ -790,9 +872,15 @@
     <!-- header -->
     <header id="header" class="fixed-top">
       <div class="header--bar">
-        <a class="header--avatar-link" href="{{ site.github.url }}/" aria-label="{{ site.title }}">
-          <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
-        </a>
+        <div class="header--left">
+          <a class="header--avatar-link" href="{{ site.github.url }}/" aria-label="{{ site.title }}">
+            <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
+          </a>
+          <span class="header--tabs">
+            <a class="header--tab{% if page.url != '/papers/' %} active{% endif %}" href="{{ site.github.url }}/">статьи</a>
+            <a class="header--tab{% if page.url == '/papers/' %} active{% endif %}" href="{{ site.github.url }}/papers/">papers</a>
+          </span>
+        </div>
         <a class="header--brand" href="{{ site.github.url }}/">{{ site.title }}</a>
         <div class="header--controls">
           {% if page.url == '/' %}
@@ -884,7 +972,7 @@
           </script>
           <ul id="page-links--default">
             {% for page in (site.pages | sort: "date", "first" | reverse) %}
-              {% if page.title %}
+              {% if page.title and page.listed != false %}
                 <li><a href="{{ site.github.url }}{{ page.url }}">{{ page.title }}</a></li>
                 <script>
                   var docUrl = '{{ site.github.url }}{{ page.url }}';

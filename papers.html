@@ -1,0 +1,56 @@
+---
+title: "Papers"
+permalink: /papers/
+lang: ru-RU
+listed: false
+---
+{% assign papers = site.data.papers %}
+{% assign rating_max = papers.rating_max | default: 10 %}
+
+<h2>Хочу прочитать</h2>
+{% if papers.want and papers.want.size > 0 %}
+<ul class="papers--want">
+  {% for p in papers.want %}
+  <li>
+    {% if p.url %}<a href="{{ p.url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}
+    {% if p.authors or p.year %}
+      <span class="papers--meta">{{ p.authors }}{% if p.authors and p.year %}, {% endif %}{{ p.year }}</span>
+    {% endif %}
+    {% if p.note %}<div class="papers--note">{{ p.note }}</div>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="papers--empty">Пока пусто.</p>
+{% endif %}
+
+<h2>Прочитано</h2>
+{% assign read = papers.read | sort: "date", "first" | reverse %}
+{% if read and read.size > 0 %}
+<table class="papers--read">
+  <thead>
+    <tr>
+      <th>Пейпер</th>
+      <th class="papers--num">Оценка</th>
+      <th class="papers--num">Дата</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in read %}
+    <tr>
+      <td>
+        {% if p.url %}<a href="{{ p.url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}
+        {% if p.authors or p.year %}
+          <div class="papers--meta">{{ p.authors }}{% if p.authors and p.year %}, {% endif %}{{ p.year }}</div>
+        {% endif %}
+        {% if p.note %}<div class="papers--note">{{ p.note }}</div>{% endif %}
+      </td>
+      <td class="papers--num">{% if p.rating %}<strong>{{ p.rating }}</strong><span class="papers--of">/{{ rating_max }}</span>{% else %}—{% endif %}</td>
+      <td class="papers--num papers--date">{% if p.date %}{{ p.date | date: "%d.%m.%Y" }}{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="papers--empty">Пока пусто.</p>
+{% endif %}
