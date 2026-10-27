@@ -3,6 +3,7 @@ title: "Чтение"
 title_en: "Reading"
 permalink: /reading/
 since: "2026-04"
+hide_title: true
 lang: ru-RU
 listed: false
 ---
@@ -10,12 +11,16 @@ listed: false
 {% assign books = site.data.books %}
 {% assign tiers = "S,A,B,C,D,E" | split: "," %}
 
-<p class="reading--since"><span class="i18n-ru">Отсчёт ведётся с апреля 2026</span><span class="i18n-en">Tracking since April 2026</span></p>
-
-<div class="tf" id="timeframe" data-since="{{ page.since }}" hidden>
-  <div class="tf--presets"></div>
-  <div class="tf--bars"></div>
-  <div class="tf--summary"></div>
+<div class="reading--top">
+  <div class="reading--head">
+    <h1 class="article--title"><span class="i18n-ru">{{ page.title }}</span><span class="i18n-en">{{ page.title_en }}</span></h1>
+    <p class="reading--since"><span class="i18n-ru">Отсчёт ведётся с апреля 2026</span><span class="i18n-en">Tracking since April 2026</span></p>
+  </div>
+  <div class="tf" id="timeframe" data-since="{{ page.since }}" hidden>
+    <div class="tf--presets"></div>
+    <div class="tf--bars"></div>
+    <div class="tf--summary"></div>
+  </div>
 </div>
 
 <h2><span class="i18n-ru">Пейперы</span><span class="i18n-en">Papers</span></h2>
