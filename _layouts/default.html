@@ -325,14 +325,14 @@
       }
       .header--tabs {
         display: inline-flex;
-        gap: 0.9rem;
+        gap: 1.3rem;
       }
       .header--tab {
-        font-size: 0.85rem;
+        font-size: 1.15rem;
         color: #6c757d;
         text-decoration: none;
-        border-bottom: 2px solid transparent;
-        padding-bottom: 0.1rem;
+        border-bottom: 3px solid transparent;
+        padding-bottom: 0.15rem;
       }
       .header--tab:hover {
         color: #495057;
@@ -438,41 +438,59 @@
       .papers--empty {
         color: #adb5bd;
       }
-      table.papers--read {
-        width: 100%;
-        border-collapse: collapse;
+      /* Тир-лист: слева цветная плашка с буквой, справа пейперы этого тира */
+      .papers--tiers {
+        border: 1px solid #d5d9dd;
+        border-radius: 0.3rem;
+        overflow: hidden;
         margin-bottom: 2rem;
       }
-      .papers--read th {
-        font-weight: 400;
-        font-size: 0.75rem;
-        color: #898781;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 1px solid #c9ced3;
-        padding: 0.3rem 0.6rem 0.3rem 0;
+      .papers--tier {
+        display: flex;
+        align-items: stretch;
+        min-height: 3.2rem;
       }
-      .papers--read td {
-        vertical-align: top;
-        border-bottom: 1px solid #e1e0d9;
-        padding: 0.6rem 0.6rem 0.6rem 0;
+      .papers--tier + .papers--tier {
+        border-top: 1px solid #d5d9dd;
       }
-      .papers--num {
-        text-align: right;
-        white-space: nowrap;
-        font-variant-numeric: tabular-nums;
+      .papers--tier-label {
+        flex: none;
+        width: 3.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: #343a40;
       }
-      .papers--read th:last-child,
-      .papers--read td:last-child {
-        padding-right: 0;
+      .tier-s { background: #f4a3a3; }
+      .tier-a { background: #f7c59a; }
+      .tier-b { background: #f6dc93; }
+      .tier-c { background: #eeee9c; }
+      .tier-d { background: #c8eaa0; }
+      .tier-e { background: #a9dfb4; }
+      ul.papers--tier-items {
+        flex: 1;
+        margin: 0;
+        padding: 0.5rem 0.9rem;
+        list-style: none;
+        background: #fff;
       }
-      .papers--of {
-        color: #adb5bd;
-        font-size: 0.8em;
+      .papers--tier-items li {
+        margin: 0.25rem 0;
+      }
+      .papers--tier-items li + li {
+        padding-top: 0.45rem;
+        border-top: 1px dashed #e1e0d9;
+      }
+      .papers--title {
+        color: #343a40;
       }
       .papers--date {
-        font-size: 0.85rem;
-        color: #6c757d;
+        margin-left: 0.5rem;
+        font-size: 0.75rem;
+        color: #adb5bd;
+        white-space: nowrap;
       }
       /* --- графики ------------------------------------------------------ */
       figure.chart {

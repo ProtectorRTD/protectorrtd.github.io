@@ -5,7 +5,6 @@ lang: ru-RU
 listed: false
 ---
 {% assign papers = site.data.papers %}
-{% assign rating_max = papers.rating_max | default: 10 %}
 
 <h2>Хочу прочитать</h2>
 {% if papers.want and papers.want.size > 0 %}
@@ -25,32 +24,24 @@ listed: false
 {% endif %}
 
 <h2>Прочитано</h2>
-{% assign read = papers.read | sort: "date", "first" | reverse %}
-{% if read and read.size > 0 %}
-<table class="papers--read">
-  <thead>
-    <tr>
-      <th>Пейпер</th>
-      <th class="papers--num">Оценка</th>
-      <th class="papers--num">Дата</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for p in read %}
-    <tr>
-      <td>
-        {% if p.url %}<a href="{{ p.url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}
+{% assign tiers = "S,A,B,C,D,E" | split: "," %}
+<div class="papers--tiers">
+  {% for t in tiers %}
+  {% assign items = papers.read | where: "tier", t %}
+  <div class="papers--tier">
+    <div class="papers--tier-label tier-{{ t | downcase }}">{{ t }}</div>
+    <ul class="papers--tier-items">
+      {% for p in items %}
+      <li>
+        {% if p.url %}<a href="{{ p.url }}">{{ p.title }}</a>{% else %}<span class="papers--title">{{ p.title }}</span>{% endif %}
+        {% if p.date %}<span class="papers--date">{{ p.date | date: "%d.%m.%Y" }}</span>{% endif %}
         {% if p.authors or p.year %}
           <div class="papers--meta">{{ p.authors }}{% if p.authors and p.year %}, {% endif %}{{ p.year }}</div>
         {% endif %}
         {% if p.note %}<div class="papers--note">{{ p.note }}</div>{% endif %}
-      </td>
-      <td class="papers--num">{% if p.rating %}<strong>{{ p.rating }}</strong><span class="papers--of">/{{ rating_max }}</span>{% else %}—{% endif %}</td>
-      <td class="papers--num papers--date">{% if p.date %}{{ p.date | date: "%d.%m.%Y" }}{% else %}—{% endif %}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p class="papers--empty">Пока пусто.</p>
-{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>

@@ -1,10 +1,27 @@
 # Списки пейперов для страницы /papers/.
 #
 # want — хочу прочитать: title, authors, year, url, note (всё кроме title — по желанию)
-# read — прочитано: то же самое + rating (из rating_max) и date (ГГГГ-ММ-ДД)
-
-rating_max: 10
+# read — прочитано: то же самое + tier (S, A, B, C, D, E) и date (ГГГГ-ММ-ДД, по желанию)
 
 want: []
 
-read: []
+read:
+  - title: "Impossibility of Distributed Consensus with One Faulty Process"
+    authors: "Michael J. Fischer, Nancy A. Lynch, Michael S. Paterson"
+    year: 1985
+    tier: S
+
+  - title: "The java.util.concurrent Synchronizer Framework"
+    authors: "Doug Lea"
+    year: 2005
+    tier: S
+
+  - title: "A Protocol for Packet Network Intercommunication"
+    authors: "Vinton G. Cerf, Robert E. Kahn"
+    year: 1974
+    tier: A
+
+  - title: "On Optimistic Methods for Concurrency Control"
+    authors: "H. T. Kung, John T. Robinson"
+    year: 1981
+    tier: B
