@@ -1,7 +1,8 @@
 {%- if include.d -%}
 {%- assign parts = include.d | split: "-" -%}
-{%- assign months = "январь,февраль,март,апрель,май,июнь,июль,август,сентябрь,октябрь,ноябрь,декабрь" | split: "," -%}
+{%- assign months_ru = "январь,февраль,март,апрель,май,июнь,июль,август,сентябрь,октябрь,ноябрь,декабрь" | split: "," -%}
+{%- assign months_en = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec" | split: "," -%}
 {%- assign mi = parts[1] | plus: 0 | minus: 1 -%}
-{%- if parts.size > 2 -%}{{ parts[2] | plus: 0 }} {% endif -%}
-{%- if mi >= 0 and mi < 12 -%}{{ months[mi] }} {% endif -%}{{ parts[0] }}
+{%- assign day = "" -%}{%- if parts.size > 2 -%}{%- capture day -%}{{ parts[2] | plus: 0 }} {% endcapture -%}{%- endif -%}
+<span class="i18n-ru">{{ day }}{% if mi >= 0 and mi < 12 %}{{ months_ru[mi] }} {% endif %}{{ parts[0] }}</span><span class="i18n-en">{{ day }}{% if mi >= 0 and mi < 12 %}{{ months_en[mi] }} {% endif %}{{ parts[0] }}</span>
 {%- endif -%}

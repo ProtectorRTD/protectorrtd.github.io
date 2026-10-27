@@ -55,6 +55,12 @@ read:
     tier: B
     date: "2026-07"
 
+  - title: "Time, Clocks, and the Ordering of Events in a Distributed System"
+    authors: "Leslie Lamport"
+    year: 1978
+    tier: A
+    date: "2026-05"
+
   - title: "MapReduce: Simplified Data Processing on Large Clusters"
     authors: "Jeffrey Dean, Sanjay Ghemawat"
     year: 2004

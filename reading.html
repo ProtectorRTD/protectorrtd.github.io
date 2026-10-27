@@ -1,5 +1,6 @@
 ---
 title: "Чтение"
+title_en: "Reading"
 permalink: /reading/
 lang: ru-RU
 listed: false
@@ -8,16 +9,17 @@ listed: false
 {% assign books = site.data.books %}
 {% assign tiers = "S,A,B,C,D,E" | split: "," %}
 
-<h2>Пейперы</h2>
+<h2><span class="i18n-ru">Пейперы</span><span class="i18n-en">Papers</span></h2>
 
-<h3>Хочу прочитать</h3>
+<h3><span class="i18n-ru">Хочу прочитать</span><span class="i18n-en">Want to read</span></h3>
 {% assign prio_keys = "now,soon,later" | split: "," %}
-{% assign prio_labels = "сейчас,следующие,потом" | split: "," %}
+{% assign prio_ru = "сейчас,следующие,потом" | split: "," %}
+{% assign prio_en = "now,next,later" | split: "," %}
 <div class="papers--tiers papers--prio">
   {% for key in prio_keys %}
   {% assign items = papers.want | where: "priority", key %}
   <div class="papers--tier">
-    <div class="papers--tier-label prio-{{ key }}">{{ prio_labels[forloop.index0] }}</div>
+    <div class="papers--tier-label prio-{{ key }}"><span class="i18n-ru">{{ prio_ru[forloop.index0] }}</span><span class="i18n-en">{{ prio_en[forloop.index0] }}</span></div>
     <ul class="papers--tier-items">
       {% for p in items %}{% include paper-item.html p=p %}{% endfor %}
     </ul>
@@ -25,7 +27,7 @@ listed: false
   {% endfor %}
 </div>
 
-<h3>Прочитано</h3>
+<h3><span class="i18n-ru">Прочитано</span><span class="i18n-en">Read</span></h3>
 <div class="papers--tiers">
   {% for t in tiers %}
   {% assign items = papers.read | where: "tier", t | sort: "date", "first" | reverse %}
@@ -38,7 +40,7 @@ listed: false
   {% endfor %}
 </div>
 
-<h2>Книги</h2>
+<h2><span class="i18n-ru">Книги</span><span class="i18n-en">Books</span></h2>
 <div class="papers--tiers books--tiers">
   {% for t in tiers %}
   {% assign items = books.read | where: "tier", t | sort: "date", "first" | reverse %}
@@ -49,7 +51,7 @@ listed: false
         {% if b.cover %}{% assign cover = b.cover | relative_url %}
         {% elsif b.isbn %}{% capture cover %}https://covers.openlibrary.org/b/isbn/{{ b.isbn }}-M.jpg?default=false{% endcapture %}
         {% else %}{% assign cover = nil %}{% endif %}
-        {% capture tip %}{{ b.title }}{% if b.authors %} — {{ b.authors }}{% endif %}{% if b.year %}, {{ b.year }}{% endif %}{% if b.date %} · прочитано {% include read-date.html d=b.date %}{% endif %}{% endcapture %}
+        {% capture tip %}{{ b.title }}{% if b.authors %} — {{ b.authors }}{% endif %}{% if b.year %}, {{ b.year }}{% endif %}{% endcapture %}
         {% if b.url %}<a class="book" href="{{ b.url }}" title="{{ tip | strip | escape }}">{% else %}<div class="book" title="{{ tip | strip | escape }}">{% endif %}
           {% if cover %}
             <img class="book--cover" src="{{ cover }}" alt="{{ b.title | escape }}" loading="lazy"
@@ -59,6 +61,7 @@ listed: false
             <div class="book--cover book--placeholder">{{ b.title }}</div>
           {% endif %}
           <div class="book--title">{{ b.title }}</div>
+          {% if b.date %}<div class="book--date">{% include read-date.html d=b.date %}</div>{% endif %}
         {% if b.url %}</a>{% else %}</div>{% endif %}
       {% endfor %}
     </div>

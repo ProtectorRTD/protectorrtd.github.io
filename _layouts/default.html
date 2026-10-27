@@ -5,6 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <script>
+      // Язык интерфейса: orig (русский) или eng. Статья задаёт его сама,
+      // на остальных страницах берём ?lang=, затем последний выбор.
+      (function () {
+        var ui = null;
+        {% if page.url contains '/articles/' %}
+        ui = "{{ page.lang | default: site.lang }}".indexOf('en') === 0 ? 'eng' : 'orig';
+        {% endif %}
+        if (!ui) {
+          var q = new URLSearchParams(location.search).get('lang');
+          if (q === 'eng' || q === 'orig') ui = q;
+        }
+        if (!ui) { try { ui = localStorage.getItem('site-lang'); } catch (e) {} }
+        if (ui !== 'eng') ui = 'orig';
+        window.setSiteLang = function (l) {
+          document.documentElement.setAttribute('data-ui', l);
+          try { localStorage.setItem('site-lang', l); } catch (e) {}
+        };
+        window.setSiteLang(ui);
+      })();
+    </script>
+
     {% seo %}
 
     <!--[if lt IE 9]>
@@ -105,7 +127,7 @@
         tocHeadings().each(function() {
           // replace - to space first due to gfmPunctuationUnicode removes -'s.
           let anchorName = this.innerText.toLowerCase().replace(/\-/g, ' ').replace(gfmPunctuationAscii, '').replace(gfmPunctuationUnicode, '').replace(/\p{Space_Separator}/gu, '-');
-          $("nav ul").append("<li class='tag-" + this.nodeName.toLowerCase() + "'><a href='#" + anchorName + "'>" + $(this).text().replace(/）$/, '') + "</a></li>");
+          $("nav ul").append("<li class='tag-" + this.nodeName.toLowerCase() + "'><a href='#" + anchorName + "'>" + $(this).html().replace(/）$/, '') + "</a></li>");
           $(this).attr("id",anchorName);
           $("nav ul li:first-child a").parent().addClass("active");
           $("nav ul li:last-child").addClass(this.tagName.toLowerCase() == topMostHeaderTag ? "font-large" : "font-small");
@@ -252,6 +274,12 @@
            при зуме браузера 150%. Один этот процент масштабирует всё:
            почти весь макет задан в rem/em. */
         font-size: 135%;
+      }
+
+      /* Двуязычные подписи интерфейса: видна та, что совпадает с data-ui */
+      html:not([data-ui="eng"]) .i18n-en,
+      html[data-ui="eng"] .i18n-ru {
+        display: none !important;
       }
 
       /* Обязательно: без этого правила li.hidden в фильтре ничего не прячет. */
@@ -536,6 +564,10 @@
       }
       .book--placeholder[hidden] {
         display: none !important;
+      }
+      .book--date {
+        font-size: 0.55rem;
+        color: #adb5bd;
       }
       .book--title {
         margin-top: 0.3rem;
@@ -949,8 +981,8 @@
             <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
           </a>
           <span class="header--tabs">
-            <a class="header--tab{% if page.url != '/reading/' %} active{% endif %}" href="{{ site.github.url }}/">статьи</a>
-            <a class="header--tab{% if page.url == '/reading/' %} active{% endif %}" href="{{ site.github.url }}/reading/">чтение</a>
+            <a class="header--tab{% if page.url != '/reading/' %} active{% endif %}" href="{{ site.github.url }}/"><span class="i18n-ru">статьи</span><span class="i18n-en">articles</span></a>
+            <a class="header--tab{% if page.url == '/reading/' %} active{% endif %}" href="{{ site.github.url }}/reading/"><span class="i18n-ru">чтение</span><span class="i18n-en">reading</span></a>
           </span>
         </div>
         <a class="header--brand" href="{{ site.github.url }}/">{{ site.title }}</a>
@@ -958,6 +990,23 @@
           {% if page.url == '/' %}
             <span id="lang-filter" class="header--group"></span>
             <span id="tag-filter" class="header--group"></span>
+          {% elsif page.url == '/reading/' %}
+            <span id="lang-filter" class="header--group">
+              <span class="tag-badge" data-lang="orig">orig</span><span class="tag-badge" data-lang="eng">eng</span>
+            </span>
+            <script>
+              (function () {
+                var chips = document.querySelectorAll('#lang-filter [data-lang]');
+                function mark() {
+                  var cur = document.documentElement.getAttribute('data-ui');
+                  chips.forEach(function (c) { c.classList.toggle('active', c.dataset.lang === cur); });
+                }
+                chips.forEach(function (c) {
+                  c.addEventListener('click', function () { window.setSiteLang(c.dataset.lang); mark(); });
+                });
+                mark();
+              })();
+            </script>
           {% else %}
             {% if page.date %}
               <time class="header--date" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>
@@ -1077,7 +1126,8 @@
               let langs = LANG_ORDER.filter(l => TAGS_BY_LANG[l]);
               // Версия выбрана всегда — «все» нет специально: тогда теги
               // в панели гарантированно относятся к показанному языку.
-              let activeLang = langs[0] ?? null;
+              let uiLang = document.documentElement.getAttribute('data-ui');
+              let activeLang = langs.includes(uiLang) ? uiLang : (langs[0] ?? null);
               let activeTag = null;   // всегда в нижнем регистре
 
               // теги только выбранной версии; если версия не выбрана — объединение
@@ -1109,13 +1159,14 @@
                 langs.forEach(l => langEl.appendChild(chip(l, activeLang === l, () => {
                   if (activeLang === l) return;      // повторный клик ничего не меняет
                   activeLang = l;
+                  if (window.setSiteLang) window.setSiteLang(l);
                   if (activeTag && !tagMap().has(activeTag)) activeTag = null;
                   render(); apply(); syncUrl();
                 })));
 
                 tagEl.innerHTML = '';
                 let map = tagMap();
-                tagEl.appendChild(chip('все', activeTag === null, () => {
+                tagEl.appendChild(chip(activeLang === 'eng' ? 'all' : 'все', activeTag === null, () => {
                   activeTag = null; render(); apply(); syncUrl();
                 }));
                 [...map.entries()].sort((a, b) => a[1].localeCompare(b[1])).forEach(([key, label]) => {
@@ -1151,6 +1202,7 @@
               let wantLang = (q.get('lang') || '').toLowerCase();
               if (langs.includes(wantLang)) activeLang = wantLang;
               if (!activeLang) activeLang = langs[0] ?? null;
+              if (activeLang && window.setSiteLang) window.setSiteLang(activeLang);
               let wantTag = (q.get('tag') || '').toLowerCase();
               if (wantTag && tagMap().has(wantTag)) activeTag = wantTag;
 
@@ -1239,7 +1291,11 @@
         {% endif %}
 
         {% if page.url != '/' %}
-          <h1 class="article--title">{{ page.title | default: site.title }}</h1>
+          {% if page.title_en %}
+            <h1 class="article--title"><span class="i18n-ru">{{ page.title }}</span><span class="i18n-en">{{ page.title_en }}</span></h1>
+          {% else %}
+            <h1 class="article--title">{{ page.title | default: site.title }}</h1>
+          {% endif %}
         {% endif %}
         {{ content }}
         <!-- spacer for screen -->
