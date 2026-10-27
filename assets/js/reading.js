@@ -16,6 +16,7 @@
       showEmpty: 'показать пустые',
       hideEmpty: 'скрыть пустые',
       emptyAll: 'пусто за этот период · показать тиры',
+      emptyEver: 'пока пусто · показать тиры',
       hint: 'клик — месяц, протянуть — диапазон',
       papers: n => n + ' ' + plural(n, 'пейпер', 'пейпера', 'пейперов'),
       books: n => n + ' ' + plural(n, 'книга', 'книги', 'книг'),
@@ -26,6 +27,7 @@
       showEmpty: 'show empty',
       hideEmpty: 'hide empty',
       emptyAll: 'nothing in this period · show tiers',
+      emptyEver: 'nothing yet · show tiers',
       hint: 'click a month, drag for a range',
       papers: n => n + (n === 1 ? ' paper' : ' papers'),
       books: n => n + (n === 1 ? ' book' : ' books'),
@@ -127,7 +129,7 @@
       if (open) {
         btn.textContent = '− ' + t.hideEmpty;
       } else if (allEmpty) {
-        btn.textContent = '+ ' + t.emptyAll;
+        btn.textContent = '+ ' + (range === null ? t.emptyEver : t.emptyAll);
       } else {
         const names = empty.map(tier => tier.querySelector('.papers--tier-label').innerText.trim());
         btn.textContent = '+ ' + t.showEmpty + ': ' + names.join(', ');
