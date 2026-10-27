@@ -2,7 +2,7 @@
 #
 # want — хочу прочитать: title, authors, year, url, note (всё кроме title — по желанию)
 #        + priority: now (сейчас), soon (следующие), later (потом)
-# read — прочитано: то же самое + tier (S, A, B, C, D, E) и date (ГГГГ-ММ-ДД, по желанию)
+# read — прочитано: то же самое + tier (S, A, B, C, D, E) и date — месяц прочтения в кавычках, "ГГГГ-ММ"
 
 want:
   - title: "The Java Memory Model"
@@ -35,18 +35,28 @@ read:
     authors: "Michael J. Fischer, Nancy A. Lynch, Michael S. Paterson"
     year: 1985
     tier: S
+    date: "2026-06"
 
   - title: "The java.util.concurrent Synchronizer Framework"
     authors: "Doug Lea"
     year: 2005
     tier: S
+    date: "2026-10"
 
   - title: "A Protocol for Packet Network Intercommunication"
     authors: "Vinton G. Cerf, Robert E. Kahn"
     year: 1974
     tier: A
+    date: "2026-09"
 
   - title: "On Optimistic Methods for Concurrency Control"
     authors: "H. T. Kung, John T. Robinson"
     year: 1981
     tier: B
+    date: "2026-07"
+
+  - title: "MapReduce: Simplified Data Processing on Large Clusters"
+    authors: "Jeffrey Dean, Sanjay Ghemawat"
+    year: 2004
+    tier: B
+    date: "2026-05"

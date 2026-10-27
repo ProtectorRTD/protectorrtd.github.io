@@ -1,0 +1,7 @@
+{%- if include.d -%}
+{%- assign parts = include.d | split: "-" -%}
+{%- assign months = "январь,февраль,март,апрель,май,июнь,июль,август,сентябрь,октябрь,ноябрь,декабрь" | split: "," -%}
+{%- assign mi = parts[1] | plus: 0 | minus: 1 -%}
+{%- if parts.size > 2 -%}{{ parts[2] | plus: 0 }} {% endif -%}
+{%- if mi >= 0 and mi < 12 -%}{{ months[mi] }} {% endif -%}{{ parts[0] }}
+{%- endif -%}

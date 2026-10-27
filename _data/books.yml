@@ -1,6 +1,6 @@
 # Тир-лист прочитанных книг на странице /reading/.
 #
-# title, authors, year, url, tier (S, A, B, C, D, E), date (ГГГГ-ММ-ДД, по желанию)
+# title, authors, year, url, tier (S, A, B, C, D, E), date (месяц прочтения в кавычках, "ГГГГ-ММ", по желанию)
 # Обложка: isbn — подтягивается из Open Library; cover — своя картинка (путь или URL), важнее isbn.
 
 read:
