@@ -41,6 +41,11 @@ want:
     priority: later
 
 read:
+  - title: "Dapper, a Large-Scale Distributed Systems Tracing Infrastructure"
+    authors: "Benjamin H. Sigelman, Luiz André Barroso, Mike Burrows et al."
+    year: 2010
+    tier: S
+
   - title: "Impossibility of Distributed Consensus with One Faulty Process"
     authors: "Michael J. Fischer, Nancy A. Lynch, Michael S. Paterson"
     year: 1985
