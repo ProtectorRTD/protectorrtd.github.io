@@ -1,0 +1,8 @@
+<li>
+  {% if include.p.url %}<a href="{{ include.p.url }}">{{ include.p.title }}</a>{% else %}<span class="papers--title">{{ include.p.title }}</span>{% endif %}
+  {% if include.p.date %}<span class="papers--date">{{ include.p.date | date: "%d.%m.%Y" }}</span>{% endif %}
+  {% if include.p.authors or include.p.year %}
+    <div class="papers--meta">{{ include.p.authors }}{% if include.p.authors and include.p.year %}, {% endif %}{{ include.p.year }}</div>
+  {% endif %}
+  {% if include.p.note %}<div class="papers--note">{{ include.p.note }}</div>{% endif %}
+</li>

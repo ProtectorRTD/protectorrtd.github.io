@@ -417,26 +417,14 @@
         font-weight: 100;
       }
       /* --- страница papers ---------------------------------------------- */
-      .papers--want {
-        padding-left: 1.2rem;
-      }
-      .papers--want li {
-        margin-bottom: 0.9em;
-      }
       .papers--meta {
         font-size: 0.8rem;
         color: #6c757d;
-      }
-      .papers--want .papers--meta::before {
-        content: " — ";
       }
       .papers--note {
         font-size: 0.8rem;
         color: #898781;
         font-style: italic;
-      }
-      .papers--empty {
-        color: #adb5bd;
       }
       /* Тир-лист: слева цветная плашка с буквой, справа пейперы этого тира */
       .papers--tiers {
@@ -469,6 +457,18 @@
       .tier-c { background: #eeee9c; }
       .tier-d { background: #c8eaa0; }
       .tier-e { background: #a9dfb4; }
+      /* «Хочу прочитать» — те же ряды, но по приоритету и в холодной гамме,
+         чтобы не путать с оценками */
+      .papers--prio .papers--tier-label {
+        width: 6rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .prio-now   { background: #9fc3ea; }
+      .prio-soon  { background: #c7dbf0; }
+      .prio-later { background: #e3e9ef; color: #6c757d !important; }
       ul.papers--tier-items {
         flex: 1;
         margin: 0;

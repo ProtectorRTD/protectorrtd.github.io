@@ -1,9 +1,34 @@
 # Списки пейперов для страницы /papers/.
 #
 # want — хочу прочитать: title, authors, year, url, note (всё кроме title — по желанию)
+#        + priority: now (сейчас), soon (скоро), later (потом)
 # read — прочитано: то же самое + tier (S, A, B, C, D, E) и date (ГГГГ-ММ-ДД, по желанию)
 
-want: []
+want:
+  - title: "JSR-133: Java Memory Model and Thread Specification"
+    authors: "JSR-133 Expert Group (William Pugh et al.)"
+    year: 2004
+    priority: soon
+
+  - title: "Futexes Are Tricky"
+    authors: "Ulrich Drepper"
+    year: 2004
+    priority: soon
+
+  - title: "Monarch: Google's Planet-Scale In-Memory Time Series Database"
+    authors: "Colin Adams, Luis Alonso et al."
+    year: 2020
+    priority: soon
+
+  - title: "Canopy: An End-to-End Performance Tracing and Analysis System"
+    authors: "Jonathan Kaldor, Jonathan Mace et al."
+    year: 2017
+    priority: soon
+
+  - title: "Large-scale cluster management at Google with Borg"
+    authors: "Abhishek Verma, Luis Pedrosa, Madhukar Korupolu, David Oppenheimer, Eric Tune, John Wilkes"
+    year: 2015
+    priority: soon
 
 read:
   - title: "Impossibility of Distributed Consensus with One Faulty Process"
