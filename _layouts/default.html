@@ -22,6 +22,7 @@
         window.setSiteLang = function (l) {
           document.documentElement.setAttribute('data-ui', l);
           try { localStorage.setItem('site-lang', l); } catch (e) {}
+          document.dispatchEvent(new CustomEvent('site-lang', { detail: l }));
         };
         window.setSiteLang(ui);
       })();
@@ -463,15 +464,43 @@
         border: 1px solid #d5d9dd;
         border-radius: 0.3rem;
         overflow: hidden;
-        margin-bottom: 2rem;
+        margin-bottom: 0.4rem;
       }
       .papers--tier {
         display: flex;
         align-items: stretch;
         min-height: 3.2rem;
       }
-      .papers--tier + .papers--tier {
-        border-top: 1px solid #d5d9dd;
+      /* Линия над каждым рядом тенью: у первого видимого ряда она уходит
+         за край рамки, поэтому скрытые ряды не дают двойных линий. */
+      .papers--tier {
+        box-shadow: 0 -1px 0 #d5d9dd;
+      }
+      /* Пустые ряды свёрнуты, пока не нажать «показать пустые» */
+      .papers--tiers:not(.show-empty) > .papers--tier.is-empty {
+        display: none;
+      }
+      .papers--tiers.all-collapsed {
+        border: none;
+      }
+      .tiers--toggle {
+        display: block;
+        margin: 0 0 2rem;
+        padding: 0;
+        border: none;
+        background: none;
+        font-size: 0.75rem;
+        color: #898781;
+        cursor: pointer;
+      }
+      .tiers--toggle:hover {
+        color: #0366d6;
+      }
+      .tiers--toggle:focus {
+        outline: none;
+      }
+      .tiers--toggle.is-idle {
+        visibility: hidden;
       }
       .papers--tier-label {
         flex: none;
@@ -511,7 +540,7 @@
       .papers--tier-items li {
         margin: 0.25rem 0;
       }
-      .papers--tier-items li + li {
+      .papers--tier-items li:not([hidden]) ~ li:not([hidden]) {
         padding-top: 0.45rem;
         border-top: 1px dashed #e1e0d9;
       }
@@ -583,9 +612,133 @@
         overflow: hidden;
       }
       .reading--since {
-        margin-top: 1rem;
+        margin: -0.6rem 0 1rem;
         font-size: 0.95rem;
         color: #adb5bd;
+      }
+      /* --- выбор периода на /reading/ ----------------------------------- */
+      .tf {
+        margin-bottom: 2.5rem;
+        padding: 0.8rem 1rem 0.7rem;
+        border: 1px solid #d5d9dd;
+        border-radius: 0.3rem;
+        background: #fff;
+      }
+      .tf--presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 0.9rem;
+      }
+      .tf--chip {
+        padding: 0.05rem 0.75rem;
+        border: 1px solid transparent;
+        border-radius: 0.75rem;
+        background: #eef1f4;
+        color: #55606b;
+        font-size: 0.72rem;
+        line-height: 1.7;
+        cursor: pointer;
+      }
+      .tf--chip:hover {
+        border-color: #adb5bd;
+      }
+      .tf--chip:focus {
+        outline: none;
+      }
+      .tf--chip.active {
+        background: #0366d6;
+        border-color: #0366d6;
+        color: #fff;
+      }
+      .tf--bars {
+        display: flex;
+        gap: 0.35rem;
+        user-select: none;
+        touch-action: pan-y;
+        cursor: pointer;
+      }
+      .tf--col {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 3.4rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .tf--count {
+        height: 1rem;
+        font-size: 0.62rem;
+        color: #6c757d;
+        font-variant-numeric: tabular-nums;
+      }
+      .tf--track {
+        display: flex;
+        align-items: flex-end;
+        width: 100%;
+        height: 3.2rem;
+        border-bottom: 1px solid #d5d9dd;
+      }
+      .tf--bar {
+        display: block;
+        width: 100%;
+        border-radius: 0.2rem 0.2rem 0 0;
+        background: #9fc3ea;
+        transition: height 0.2s, background 0.15s;
+      }
+      .tf--col:hover .tf--bar {
+        background: #6ea6e0;
+      }
+      .tf--col.in .tf--bar {
+        background: #0366d6;
+      }
+      .tf--col.out .tf--bar {
+        background: #dfe6ee;
+      }
+      .tf--col.in .tf--track {
+        background: #eef4fb;
+      }
+      .tf--month {
+        margin-top: 0.25rem;
+        font-size: 0.62rem;
+        color: #6c757d;
+      }
+      .tf--col.now .tf--month {
+        color: #343a40;
+        font-weight: 600;
+      }
+      .tf--col.in .tf--month {
+        color: #0366d6;
+      }
+      .tf--year {
+        height: 0.8rem;
+        font-size: 0.52rem;
+        color: #adb5bd;
+      }
+      .tf--summary {
+        margin-top: 0.6rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+      }
+      .tf--period {
+        color: #343a40;
+      }
+      .tf--sep {
+        margin: 0 0.45rem;
+        color: #ced4da;
+      }
+      .tf--summary > span:not(.tf--sep) {
+        white-space: nowrap;
+      }
+      @media (max-width: 46rem) {
+        .papers--prio .papers--tier-label {
+          width: 4.3rem;
+          font-size: 0.55rem;
+          letter-spacing: 0.02em;
+        }
+        .papers--tier-label {
+          width: 2.4rem;
+        }
       }
       /* --- графики ------------------------------------------------------ */
       figure.chart {

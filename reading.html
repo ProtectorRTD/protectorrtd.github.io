@@ -2,12 +2,21 @@
 title: "Чтение"
 title_en: "Reading"
 permalink: /reading/
+since: "2026-04"
 lang: ru-RU
 listed: false
 ---
 {% assign papers = site.data.papers %}
 {% assign books = site.data.books %}
 {% assign tiers = "S,A,B,C,D,E" | split: "," %}
+
+<p class="reading--since"><span class="i18n-ru">Отсчёт ведётся с апреля 2026</span><span class="i18n-en">Tracking since April 2026</span></p>
+
+<div class="tf" id="timeframe" data-since="{{ page.since }}" hidden>
+  <div class="tf--presets"></div>
+  <div class="tf--bars"></div>
+  <div class="tf--summary"></div>
+</div>
 
 <h2><span class="i18n-ru">Пейперы</span><span class="i18n-en">Papers</span></h2>
 
@@ -27,7 +36,7 @@ listed: false
 </div>
 
 <h3><span class="i18n-ru">Прочитано</span><span class="i18n-en">Read</span></h3>
-<div class="papers--tiers">
+<div class="papers--tiers js-read">
   {% for t in tiers %}
   {% assign items = papers.read | where: "tier", t | sort: "date", "first" | reverse %}
   <div class="papers--tier">
@@ -54,7 +63,7 @@ listed: false
 </div>
 
 <h3><span class="i18n-ru">Прочитано</span><span class="i18n-en">Read</span></h3>
-<div class="papers--tiers books--tiers">
+<div class="papers--tiers books--tiers js-read">
   {% for t in tiers %}
   {% assign items = books.read | where: "tier", t | sort: "date", "first" | reverse %}
   <div class="papers--tier">
@@ -66,4 +75,4 @@ listed: false
   {% endfor %}
 </div>
 
-<p class="reading--since"><span class="i18n-ru">Отсчёт ведётся с апреля 2026</span><span class="i18n-en">Tracking since April 2026</span></p>
+<script src="{{ '/assets/js/reading.js' | relative_url }}" defer></script>

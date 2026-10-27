@@ -1,4 +1,4 @@
-<li>
+<li{% if include.p.date %} data-date="{{ include.p.date }}"{% endif %}>
   {% if include.p.url %}<a href="{{ include.p.url }}">{{ include.p.title }}</a>{% else %}<span class="papers--title">{{ include.p.title }}</span>{% endif %}
   {% if include.p.date %}<span class="papers--date">{% include read-date.html d=include.p.date %}</span>{% endif %}
   {% if include.p.authors or include.p.year %}
