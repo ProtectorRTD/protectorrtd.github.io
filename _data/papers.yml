@@ -25,9 +25,9 @@ want:
     year: 2015
     priority: soon
 
-  - title: "Amazon DynamoDB: A Scalable, Predictably Performant, and Fully Managed NoSQL Database Service"
-    authors: "Mostafa Elhemali, Niall Gallagher et al."
-    year: 2022
+  - title: "Dynamo: Amazon's Highly Available Key-value Store"
+    authors: "Giuseppe DeCandia, Deniz Hastorun et al."
+    year: 2007
     priority: soon
 
   - title: "How Amazon Web Services Uses Formal Methods"
