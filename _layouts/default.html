@@ -544,6 +544,23 @@
         padding-top: 0.45rem;
         border-top: 1px dashed #e1e0d9;
       }
+      .papers--kind {
+        margin-left: 0.4rem;
+        padding: 0 0.45em;
+        border: 1px solid #ced4da;
+        border-radius: 0.2rem;
+        font-size: 0.6rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #6c757d;
+        vertical-align: 0.15em;
+        white-space: nowrap;
+      }
+      /* выбран период — списки «что читать» прячем, остаётся прочитанное */
+      .reading-filtered .papers--prio,
+      .reading-filtered .papers--prio + .tiers--toggle {
+        display: none !important;
+      }
       .papers--title {
         color: #343a40;
       }

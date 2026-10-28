@@ -2,6 +2,7 @@
 #
 # want — хочу прочитать: title, authors, year, url, note (всё кроме title — по желанию)
 #        + priority: now (сейчас), soon (следующие), later (потом)
+#        + kind: article — пометка «статья» (блог-пост, а не пейпер)
 # read — прочитано: то же самое + tier (S, A, B, C, D, E) и date — месяц прочтения в кавычках, "ГГГГ-ММ"
 
 want:
@@ -33,6 +34,19 @@ want:
   - title: "How Amazon Web Services Uses Formal Methods"
     authors: "Chris Newcombe, Tim Rath, Fan Zhang, Bogdan Munteanu, Marc Brooker, Michael Deardeuff"
     year: 2015
+    priority: soon
+
+  - title: "Why Google Stores Billions of Lines of Code in a Single Repository"
+    authors: "Rachel Potvin, Josh Levenberg"
+    year: 2016
+    url: "https://research.google/pubs/why-google-stores-billions-of-lines-of-code-in-a-single-repository/"
+    priority: soon
+
+  - title: "Introducing Domain-Oriented Microservice Architecture"
+    authors: "Adam Gluck (Uber Engineering)"
+    year: 2020
+    url: "https://www.uber.com/ua/en/blog/microservice-architecture/"
+    kind: article
     priority: soon
 
   - title: "Futexes Are Tricky"

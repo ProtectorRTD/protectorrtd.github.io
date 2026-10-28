@@ -197,6 +197,9 @@
   }
 
   function update() {
+    // С выбранным периодом «сейчас / следующие / потом» не нужны —
+    // остаётся только то, что прочитано за этот период.
+    document.documentElement.classList.toggle('reading-filtered', range !== null);
     applyFilter();
     renderTimeframe();
   }
