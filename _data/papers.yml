@@ -49,10 +49,16 @@ want:
     kind: article
     priority: soon
 
-  - title: "Quarkus — all articles on Red Hat Developer"
-    authors: "Red Hat Developer"
-    url: "https://developers.redhat.com/topics/quarkus/all"
-    kind: article
+  - title: "Enhancing Performance of Cloud-based Software Applications with GraalVM and Quarkus"
+    authors: "Matija Šipek, Dino Muharemagić, Branko Mihaljević, Aleksander Radovan"
+    year: 2020
+    url: "https://arxiv.org/abs/2201.11851"
+    priority: soon
+
+  - title: "Comparative performance analysis of Spring Boot and Quarkus frameworks in Java applications"
+    authors: "Grzegorz Szymanek, Jakub Smołka"
+    year: 2025
+    url: "https://ph.pollub.pl/index.php/jcsi/article/view/8047"
     priority: soon
 
   - title: "Futexes Are Tricky"
