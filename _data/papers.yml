@@ -55,10 +55,16 @@ want:
     url: "https://arxiv.org/abs/2201.11851"
     priority: soon
 
-  - title: "Comparative performance analysis of Spring Boot and Quarkus frameworks in Java applications"
-    authors: "Grzegorz Szymanek, Jakub Smołka"
-    year: 2025
-    url: "https://ph.pollub.pl/index.php/jcsi/article/view/8047"
+  - title: "Analysing the Performance and Costs of Reactive Programming Libraries in Java"
+    authors: "Julien Ponge, Arthur Navarro, Clément Escoffier, Frédéric Le Mouël"
+    year: 2021
+    url: "https://doi.org/10.1145/3486605.3486788"
+    priority: soon
+
+  - title: "Initialize Once, Start Fast: Application Initialization at Build Time"
+    authors: "Christian Wimmer, Codrut Stancu, Peter Hofer, Vojin Jovanovic, Paul Wögerer, Peter B. Kessler, Oleg Pliss, Thomas Würthinger"
+    year: 2019
+    url: "https://cstancu.github.io/3360610.pdf"
     priority: soon
 
   - title: "Futexes Are Tricky"
