@@ -67,6 +67,12 @@ want:
     url: "https://cstancu.github.io/3360610.pdf"
     priority: soon
 
+  - title: "Garbage-First Garbage Collection"
+    authors: "David Detlefs, Christine Flood, Steve Heller, Tony Printezis"
+    year: 2004
+    url: "https://dl.acm.org/doi/10.1145/1029873.1029879"
+    priority: soon
+
   - title: "Futexes Are Tricky"
     authors: "Ulrich Drepper"
     year: 2004
