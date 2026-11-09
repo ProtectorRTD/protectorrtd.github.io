@@ -344,17 +344,13 @@
         margin: 0 auto;
         padding: 0.6rem 1.5rem;
       }
-      /* колонка 1 — фотка и вкладки разделов */
+      /* колонка 1 — вкладки разделов */
       .header--left {
         grid-column: 1;
         justify-self: start;
         display: flex;
         align-items: center;
         gap: 1rem;
-      }
-      .header--avatar-link {
-        display: inline-flex;
-        line-height: 0;
       }
       .header--tabs {
         display: inline-flex;
@@ -383,10 +379,13 @@
         flex: none;
       }
 
-      /* колонка 2 — ник, ровно по центру страницы */
+      /* колонка 2 — Том и ник, ровно по центру страницы */
       .header--brand {
         grid-column: 2;
         justify-self: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
         font-weight: 300;
         font-size: 1.4rem;
         line-height: 1.2;
@@ -1178,15 +1177,15 @@
     <header id="header" class="fixed-top">
       <div class="header--bar">
         <div class="header--left">
-          <a class="header--avatar-link" href="{{ site.github.url }}/" aria-label="{{ site.title }}">
-            <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
-          </a>
           <span class="header--tabs">
             <a class="header--tab{% if page.url != '/reading/' %} active{% endif %}" href="{{ site.github.url }}/"><span class="i18n-ru">статьи</span><span class="i18n-en">articles</span></a>
             <a class="header--tab{% if page.url == '/reading/' %} active{% endif %}" href="{{ site.github.url }}/reading/"><span class="i18n-ru">чтение</span><span class="i18n-en">reading</span></a>
           </span>
         </div>
-        <a class="header--brand" href="{{ site.github.url }}/">{{ site.title }}</a>
+        <a class="header--brand" href="{{ site.github.url }}/">
+          <img class="header--avatar" src="/assets/img/favicon.png" alt="" />
+          <span>{{ site.title }}</span>
+        </a>
         <div class="header--controls">
           {% if page.url == '/' %}
             <span id="lang-filter" class="header--group"></span>
