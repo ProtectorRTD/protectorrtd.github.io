@@ -11,6 +11,18 @@ want:
     year: 2005
     priority: now
 
+  - title: "The Ubiquitous B-Tree"
+    authors: "Douglas Comer"
+    year: 1979
+    url: "https://carlosproal.com/ir/papers/p121-comer.pdf"
+    priority: now
+
+  - title: "Access Path Selection in a Relational Database Management System"
+    authors: "P. Griffiths Selinger, M. M. Astrahan, D. D. Chamberlin, R. A. Lorie, T. G. Price"
+    year: 1979
+    url: "https://courses.cs.duke.edu/compsci516/cps216/spring03/papers/selinger-etal-1979.pdf"
+    priority: now
+
   - title: "Monarch: Google's Planet-Scale In-Memory Time Series Database"
     authors: "Colin Adams, Luis Alonso et al."
     year: 2020
