@@ -9,7 +9,7 @@ want:
   - title: "The Java Memory Model"
     authors: "Jeremy Manson, William Pugh, Sarita V. Adve"
     year: 2005
-    priority: now
+    priority: soon
 
   - title: "The Ubiquitous B-Tree"
     authors: "Douglas Comer"
