@@ -1,7 +1,6 @@
 ---
 title: "Paper report 0.0"
 date: 2026-11-15
-description: "Why I write up the papers I read: thinking through writing, and an attempt to close the gaps in my CS fundamentals."
 tags: [papers]
 ---
 
